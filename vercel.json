@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/corneli",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/crinzo",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
