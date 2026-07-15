@@ -5,117 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRN · Калькулятор бонусов</title>
 <style>
-:root{
-  --ink:#17151a; --paper:#f6f4ef; --card:#fff; --line:#e3ded4;
-  --mut:#8a8478; --accent:#8a6d3b; --accent-ink:#6f5527; --good:#2e7d4f;
-  --red:#b03030;
-}
+:root{--ink:#17151a;--paper:#f6f4ef;--card:#fff;--line:#e3ded4;--mut:#8a8478;--accent:#8a6d3b;--accent-ink:#6f5527;--good:#2e7d4f;--red:#b03030}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Helvetica Neue',Arial,system-ui,sans-serif;background:var(--paper);
-  color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
-.wrap{max-width:480px;margin:0 auto;padding:0 16px 60px}
-
-/* HEADER */
-header{padding:28px 0 16px;border-bottom:1px solid var(--ink);margin-bottom:24px}
+body{font-family:'Helvetica Neue',Arial,system-ui,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:440px;margin:0 auto;padding:0 16px 60px}
+header{padding:26px 0 14px;border-bottom:1px solid var(--ink);margin-bottom:22px}
 .hrow{display:flex;justify-content:space-between;align-items:baseline}
 .logo{font-size:12px;letter-spacing:.38em;font-weight:700}
 .ver{font-size:9px;color:var(--mut)}
-h1{font-size:24px;font-weight:300;margin-top:10px;line-height:1.2}
+h1{font-size:23px;font-weight:300;margin-top:9px;line-height:1.2}
 h1 b{font-weight:700}
 
-/* ШАГИ */
-.steps{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--line);background:var(--card)}
-.step{flex:1;padding:10px 6px;text-align:center;font-size:10.5px;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--mut);cursor:pointer;border-right:1px solid var(--line);
-  transition:background .15s}
-.step:last-child{border-right:none}
-.step.active{background:var(--ink);color:var(--paper)}
-.step.done{color:var(--accent-ink);font-weight:600}
+/* ЛОГИН */
+.field{margin-bottom:13px}
+label{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+input[type=tel],input[type=password],input[type=number]{width:100%;padding:13px 14px;font-size:17px;font-family:inherit;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--ink);appearance:none;-webkit-appearance:none}
+input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.btn{width:100%;padding:14px;background:var(--ink);color:var(--paper);font-size:15px;font-family:inherit;border:none;cursor:pointer;letter-spacing:.04em;margin-top:6px}
+.btn:active{opacity:.85}
+.error{color:var(--red);font-size:13px;margin-top:10px;display:none}
+.hint{font-size:11.5px;color:var(--mut);margin-top:12px;line-height:1.6}
 
-/* ЭКРАНЫ */
-.screen{display:none}.screen.active{display:block}
+/* ПОСЛЕ ВХОДА */
+#main{display:none}
+.store-bar{background:var(--card);border:1px solid var(--line);padding:12px 15px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+.store-bar .info strong{font-size:15px}
+.store-bar .info span{font-size:11.5px;color:var(--mut);display:block;margin-top:2px}
+.logout{font-size:11px;color:var(--mut);cursor:pointer;text-decoration:underline;white-space:nowrap;margin-left:12px}
 
-/* СПИСОК ВЫБОРА */
-.pick-list{display:flex;flex-direction:column;gap:8px}
-.pick-item{background:var(--card);border:1px solid var(--line);padding:14px 16px;
-  cursor:pointer;font-size:15px;display:flex;justify-content:space-between;align-items:center;
-  transition:border-color .15s}
-.pick-item:active,.pick-item:hover{border-color:var(--accent)}
-.pick-item .arrow{color:var(--mut);font-size:13px}
-.pick-item .sub{font-size:11px;color:var(--mut);margin-top:2px}
-.section-label{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--mut);margin:18px 0 8px;font-weight:700}
-.section-label:first-child{margin-top:0}
+/* ВКЛАДКИ РОЛЕЙ */
+.role-tabs{display:flex;border:1px solid var(--line);background:var(--card);margin-bottom:20px}
+.role-tab{flex:1;padding:11px 6px;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);cursor:pointer;border-right:1px solid var(--line);transition:background .15s}
+.role-tab:last-child{border-right:none}
+.role-tab.active{background:var(--ink);color:var(--paper)}
+.role-panel{display:none}.role-panel.active{display:block}
 
 /* ПОЛЯ */
-.field{margin-bottom:14px}
-label{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--mut);margin-bottom:6px}
-input[type=number]{width:100%;padding:12px 13px;font-size:16px;font-family:inherit;
-  border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--ink);
-  appearance:none}
-input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .toggles{display:flex;flex-direction:column;gap:7px}
-.tgl{display:flex;align-items:center;gap:10px;background:var(--card);
-  border:1px solid var(--line);padding:11px 13px;cursor:pointer;font-size:13.5px}
+.tgl{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);padding:11px 13px;cursor:pointer;font-size:13.5px}
 .tgl input{width:19px;height:19px;accent-color:var(--accent);flex-shrink:0}
 .tgl small{color:var(--mut);display:block;font-size:11px;margin-top:2px}
 
-/* КОНТЕКСТ МАГАЗИНА */
-.store-ctx{background:var(--card);border:1px solid var(--line);padding:12px 14px;
-  margin-bottom:20px;font-size:13px}
-.store-ctx strong{display:block;font-size:14px;margin-bottom:2px}
-.store-ctx span{color:var(--mut);font-size:11.5px}
-.change-btn{float:right;font-size:11px;color:var(--accent-ink);cursor:pointer;
-  text-decoration:underline;margin-top:2px}
-
 /* РЕЗУЛЬТАТ */
-.total-card{background:var(--ink);color:var(--paper);padding:22px 18px;margin-top:6px}
+.total-card{background:var(--ink);color:var(--paper);padding:20px 16px;margin-top:6px}
 .total-label{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.65}
-.total-num{font-size:38px;font-weight:300;margin-top:5px;font-variant-numeric:tabular-nums}
+.total-num{font-size:36px;font-weight:300;margin-top:4px;font-variant-numeric:tabular-nums}
 .total-num b{font-weight:700}
 .total-sub{font-size:10px;opacity:.5;margin-top:4px}
-
 .breakdown{background:var(--card);border:1px solid var(--line);border-top:none}
-.bd-row{display:flex;justify-content:space-between;align-items:baseline;
-  padding:11px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+.bd-row{display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px}
 .bd-row:last-child{border-bottom:none}
 .bd-row .amt{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .bd-row .amt.zero{color:var(--mut);font-weight:400}
 .bd-row small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
-
-/* ШКАЛА */
-.scale-wrap{margin-top:20px}
-.scale-title{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--mut);margin-bottom:8px;font-weight:700}
-.scale-t{width:100%;border-collapse:collapse;background:var(--card);font-size:13px}
-.scale-t th{background:#eae6dc;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
-  padding:8px 6px;border:1px solid var(--line);font-weight:700}
-.scale-t td{padding:9px 8px;border:1px solid var(--line);text-align:center;
-  font-variant-numeric:tabular-nums}
-.scale-t tr.active-row td{background:#fff8e8;font-weight:700}
-.scale-t tr.active-row td:first-child::before{content:"► ";color:var(--accent)}
-.scale-t tr.active-row td:last-child{color:var(--accent-ink);font-size:15px}
-.scale-t tr.active-row td:last-child::after{content:" ◄";color:var(--accent);font-size:12px}
-
-/* СЛЕДУЮЩИЙ ПОРОГ */
-.next{margin-top:20px;border:2px solid var(--accent);background:var(--card);padding:16px 18px}
-.next-ey{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--accent-ink);font-weight:700}
-.next-main{font-size:17px;line-height:1.45;margin-top:9px}
+.next{margin-top:18px;border:2px solid var(--accent);background:var(--card);padding:14px 16px}
+.next-ey{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:700}
+.next-main{font-size:16px;line-height:1.45;margin-top:8px}
 .next-main b{border-bottom:2px solid var(--accent)}
-.next-gain{margin-top:8px;font-size:14px;color:var(--good);font-weight:600}
-.bar{height:7px;background:var(--line);margin-top:12px}
+.next-gain{margin-top:7px;font-size:13.5px;color:var(--good);font-weight:600}
+.bar{height:6px;background:var(--line);margin-top:11px}
 .bar-fill{height:100%;background:var(--accent);transition:width .4s}
-.bar-marks{display:flex;justify-content:space-between;font-size:10px;
-  color:var(--mut);margin-top:4px;font-variant-numeric:tabular-nums}
+.bar-marks{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:4px;font-variant-numeric:tabular-nums}
 .next.max{border-color:var(--good)}.next.max .next-ey{color:var(--good)}
 .hidden{display:none}
-.scale-wrap{display:none}
-.scale-wrap{display:none}
-.disclaimer{margin-top:20px;font-size:10.5px;color:var(--mut);line-height:1.6}
-@media(max-width:380px){.total-num{font-size:32px}.row2{grid-template-columns:1fr}}
+.disclaimer{margin-top:18px;font-size:10.5px;color:var(--mut);line-height:1.6}
+@media(max-width:380px){.total-num{font-size:30px}.row2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -125,269 +80,198 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
   <h1>Калькулятор <b>бонусов</b></h1>
 </header>
 
-<div class="steps">
-  <div class="step active" id="stp1">1 · Город</div>
-  <div class="step" id="stp2">2 · Магазин</div>
-  <div class="step" id="stp3">3 · Должность</div>
-  <div class="step" id="stp4">4 · Расчёт</div>
+<!-- ЛОГИН -->
+<div id="login">
+  <div class="field"><label>Номер телефона</label><input type="tel" id="phone" placeholder="77001234567" inputmode="numeric"></div>
+  <div class="field"><label>Пароль</label><input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <button class="btn" onclick="doLogin()">Войти</button>
+  <div class="error" id="err">Неверный телефон или пароль</div>
+  <div class="hint">Введи номер без пробелов и знака +. По вопросам — обратись к HR.</div>
 </div>
 
-<!-- ШАГ 1: ГОРОД -->
-<div class="screen active" id="sc1">
-  <div id="city-list" class="pick-list"></div>
-</div>
-
-<!-- ШАГ 2: МАГАЗИН -->
-<div class="screen" id="sc2">
-  <div id="store-list" class="pick-list"></div>
-</div>
-
-<!-- ШАГ 3: ДОЛЖНОСТЬ -->
-<div class="screen" id="sc3">
-  <div id="store-ctx3" class="store-ctx"></div>
-  <div id="role-list" class="pick-list"></div>
-</div>
-
-<!-- ШАГ 4: КАЛЬКУЛЯТОР -->
-<div class="screen" id="sc4">
-  <div id="store-ctx4" class="store-ctx"></div>
-  <div id="calc-form"></div>
-  <div class="total-card">
-    <div class="total-label">Прогноз бонуса за месяц</div>
-    <div class="total-num" id="total">—</div>
-    <div class="total-sub">до налогов · ориентировочно</div>
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<div id="main">
+  <div class="store-bar">
+    <div class="info"><strong id="bar-store"></strong><span id="bar-sub"></span></div>
+    <span class="logout" onclick="doLogout()">Выйти</span>
   </div>
-  <div class="breakdown" id="breakdown"></div>
-  <div class="scale-wrap">
-    <div class="scale-title" id="scale-title">Шкала</div>
-    <table class="scale-t" id="scale-table"><thead></thead><tbody></tbody></table>
+
+  <div class="role-tabs">
+    <div class="role-tab active" onclick="switchRole('dir',this)">Директор</div>
+    <div class="role-tab" onclick="switchRole('ad',this)">Администратор</div>
+    <div class="role-tab" onclick="switchRole('st',this)">Стилист</div>
   </div>
-  <div class="next hidden" id="nextcard"></div>
+
+  <!-- ДИРЕКТОР -->
+  <div class="role-panel active" id="panel-dir">
+    <div class="field"><label>План ТО магазина, тг</label><input type="number" id="dir-s_plan" inputmode="numeric" oninput="calc('dir')"></div>
+    <div class="field"><label>Факт / прогноз ТО, тг</label><input type="number" id="dir-s_fact" inputmode="numeric" oninput="calc('dir')"></div>
+    <div class="field"><label>Core KPI — по 40 000 тг каждый</label>
+      <div class="toggles">
+        <label class="tgl"><input type="checkbox" id="dir-hr" checked onchange="calc('dir')"><span>HR-бонус<small>0 увольнений, план в допустимых нормах</small></span></label>
+        <label class="tgl"><input type="checkbox" id="dir-fin" checked onchange="calc('dir')"><span>FIN-бонус<small>≤3 ошибок дисциплины, 0 расхождений</small></span></label>
+        <label class="tgl"><input type="checkbox" id="dir-stock" checked onchange="calc('dir')"><span>Stock-бонус<small>лимиты по выгрузке и перемещениям</small></span></label>
+      </div>
+    </div>
+    <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="dir-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
+    <div class="breakdown" id="dir-bd"></div>
+    <div class="next hidden" id="dir-next"></div>
+  </div>
+
+  <!-- АДМИНИСТРАТОР -->
+  <div class="role-panel" id="panel-ad">
+    <div class="row2">
+      <div class="field"><label>План продаж, тг</label><input type="number" id="ad-p_plan" inputmode="numeric" oninput="calc('ad')" id="ad-p_plan"></div>
+      <div class="field"><label>Факт / прогноз, тг</label><input type="number" id="ad-p_fact" inputmode="numeric" oninput="calc('ad')"></div>
+    </div>
+    <div class="field"><label>Core KPI — по 30 000 тг каждый</label>
+      <div class="toggles">
+        <label class="tgl"><input type="checkbox" id="ad-hr" checked onchange="calc('ad')"><span>HR-бонус<small>0 увольнений, план в допустимых нормах</small></span></label>
+        <label class="tgl"><input type="checkbox" id="ad-fin" checked onchange="calc('ad')"><span>FIN-бонус<small>≤3 ошибок дисциплины, 0 расхождений</small></span></label>
+        <label class="tgl"><input type="checkbox" id="ad-stock" checked onchange="calc('ad')"><span>Stock-бонус<small>лимиты по выгрузке и перемещениям</small></span></label>
+      </div>
+    </div>
+    <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="ad-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
+    <div class="breakdown" id="ad-bd"></div>
+    <div class="next hidden" id="ad-next"></div>
+  </div>
+
+  <!-- СТИЛИСТ -->
+  <div class="role-panel" id="panel-st">
+    <div class="row2">
+      <div class="field"><label>План ср. чек, тг</label><input type="number" id="st-atv_plan" inputmode="numeric" oninput="calc('st')"></div>
+      <div class="field"><label>Факт ср. чек, тг</label><input type="number" id="st-atv_fact" inputmode="numeric" oninput="calc('st')"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>План продаж, тг</label><input type="number" id="st-p_plan" inputmode="numeric" oninput="calc('st')"></div>
+      <div class="field"><label>Факт / прогноз, тг</label><input type="number" id="st-p_fact" inputmode="numeric" oninput="calc('st')"></div>
+    </div>
+    <div id="st-hours-wrap" class="field" style="display:none"><label>Часы (850 тг/час — Шымкент)</label><input type="number" id="st-hours" inputmode="numeric" oninput="calc('st')"></div>
+    <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="st-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
+    <div class="breakdown" id="st-bd"></div>
+    <div class="next hidden" id="st-next"></div>
+  </div>
+
   <div class="disclaimer">Расчёт по системе оплаты труда CRN Group, приказ от 30.04.2026. Итоговое начисление — по данным 1С. При расхождении приоритет у расчётной ведомости.</div>
 </div>
 </div>
 
 <script>
-const STORES=[{"city": "Алматы", "store": "MEGA ALMA-ATA", "brand": "CORNELI", "seg": "corneli"}, {"city": "Алматы", "store": "MEGA SILKWAY", "brand": "CORNELI", "seg": "corneli"}, {"city": "Алматы", "store": "MEGA PARK", "brand": "CORNELI", "seg": "corneli"}, {"city": "Алматы", "store": "AL-FARABI", "brand": "CORNELI", "seg": "corneli"}, {"city": "Алматы", "store": "OUTLET (Corneli)", "brand": "CORNELI", "seg": "corneli_outlet"}, {"city": "Алматы", "store": "ZHELTOKSAN", "brand": "CRINZO", "seg": "crinzo"}, {"city": "Алматы", "store": "OUTLET (Crinzo)", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"city": "Астана", "store": "TURAN", "brand": "CORNELI", "seg": "corneli"}, {"city": "Астана", "store": "OUTLET (Corneli)", "brand": "CORNELI", "seg": "corneli_outlet"}, {"city": "Астана", "store": "MEGA SILKWAY", "brand": "CRINZO", "seg": "crinzo"}, {"city": "Астана", "store": "МАНГІЛІК ЕЛ", "brand": "CRINZO", "seg": "crinzo"}, {"city": "Шымкент", "store": "КУНАЕВА", "brand": "CORNELI", "seg": "corneli", "shymkent": true}, {"city": "Шымкент", "store": "GRAND PARK", "brand": "CORNELI", "seg": "corneli", "shymkent": true}, {"city": "Шымкент", "store": "НУРСАТ", "brand": "CRINZO", "seg": "crinzo", "shymkent": true}, {"city": "Атырау", "store": "BAIZAAR", "brand": "CORNELI", "seg": "corneli"}, {"city": "Актау", "store": "AKTAU", "brand": "CORNELI", "seg": "corneli"}, {"city": "Қызылорда", "store": "KYZYLORDA", "brand": "CRINZO", "seg": "crinzo"}, {"city": "Қарағанды", "store": "KARAGANDA (Corneli)", "brand": "CORNELI", "seg": "corneli_outlet"}, {"city": "Қарағанды", "store": "KARAGANDA (Crinzo)", "brand": "CRINZO", "seg": "crinzo_outlet"}];
-const SCALES={"corneli": {"st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]]}, "corneli_outlet": {"st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]]}, "crinzo": {"st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]]}, "crinzo_outlet": {"st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]]}};
-const ROLES=[{"key": "st", "label": "Стилист-консультант"}, {"key": "ad", "label": "Администратор"}, {"key": "dir", "label": "Директор магазина"}];
-const CORE={"st": 0, "ad": 30000, "dir": 40000};
-const ATV_PH={"corneli": "200 000", "corneli_outlet": "180 000", "crinzo": "80 000", "crinzo_outlet": "80 000"};
-const SALES_PH={"corneli": "10 000 000", "corneli_outlet": "8 000 000", "crinzo": "5 000 000", "crinzo_outlet": "5 000 000"};
+const DIRECTORS=[{"phone": "77082340740", "name": "Сейтбек А.", "store": "AKTAU", "city": "Актау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77751674260", "name": "Имамбекова Г.", "store": "AL-FARABI", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77027449155", "name": "Шайкулова М.", "store": "MEGA ALMA-ATA", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77077850635", "name": "Кожевникова У.", "store": "MEGA PARK", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77477646940", "name": "Калиханова З.", "store": "MEGA SILKWAY", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77075186643", "name": "Мукеева А.", "store": "OUTLET", "city": "Алматы", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77054123227", "name": "Амирханова А.", "store": "OUTLET", "city": "Астана", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77779101234", "name": "Кульбатырова И.", "store": "TURAN", "city": "Астана", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77022949998", "name": "Алимбекова А.", "store": "BAIZAAR", "city": "Атырау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77716598687", "name": "Козяев В.", "store": "GRAND PARK", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77777002001", "name": "Қуаныш Ұ.", "store": "КУНАЕВА", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77059702555", "name": "Романова З.", "store": "KARAGANDA", "city": "Қарағанды", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77476394503", "name": "Дилдабай А.", "store": "OUTLET", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"phone": "77087774289", "name": "Жазира", "store": "ZHELTOKSAN", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769907369", "name": "Әмірәлі А.", "store": "MEGA SILKWAY", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77054287861", "name": "Садуақас А.", "store": "МАНГІЛІК ЕЛ", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77009566306", "name": "Әбдіхан Д.", "store": "НУРСАТ", "city": "Шымкент", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769001111", "name": "Қосынбаев Ж.", "store": "KYZYLORDA", "city": "Қызылорда", "brand": "CRINZO", "seg": "crinzo"}];
+const SCALES={"corneli": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "corneli_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo": {"dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}};
+const CORE={"dir": 40000, "ad": 30000, "st": 0};
 const TO_PH={"corneli": "60 000 000", "corneli_outlet": "35 000 000", "crinzo": "25 000 000", "crinzo_outlet": "20 000 000"};
-
-// ── СОСТОЯНИЕ ──────────────────────────────────────────────────────────────────
-let state = { city:null, store:null, role:null };
+const SALES_PH={"corneli": "10 000 000", "corneli_outlet": "8 000 000", "crinzo": "5 000 000", "crinzo_outlet": "5 000 000"};
+const ATV_PH={"corneli": "200 000", "corneli_outlet": "180 000", "crinzo": "80 000", "crinzo_outlet": "80 000"};
+const APP_PASSWORD="CRN2026";
 const fmt = n => Math.round(n).toLocaleString('ru-RU') + ' тг';
-const num = id => { const el=document.getElementById(id); if(!el)return 0; const v=parseFloat(el.value.replace(/\s/g,'')); return isNaN(v)?0:v; };
+const num = id => { const el=document.getElementById(id); if(!el)return 0; const v=parseFloat((el.value||'').replace(/\s/g,'')); return isNaN(v)?0:v; };
 const chk = id => { const el=document.getElementById(id); return el?el.checked:false; };
+let DIR = null;
 
-// ── НАВИГАЦИЯ ──────────────────────────────────────────────────────────────────
-function goStep(n){
-  document.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n-1));
-  document.querySelectorAll('.step').forEach((s,i)=>{
-    s.classList.remove('active','done');
-    if(i===n-1) s.classList.add('active');
-    else if(i<n-1) s.classList.add('done');
-  });
+function normalizePhone(p){ return p.replace(/[^0-9]/g,''); }
+
+function doLogin(){
+  const phone = normalizePhone(document.getElementById('phone').value);
+  const pass  = document.getElementById('password').value.trim();
+  document.getElementById('err').style.display='none';
+  if(pass !== APP_PASSWORD){ document.getElementById('err').style.display='block'; return; }
+  const dir = DIRECTORS.find(d => normalizePhone(d.phone) === phone);
+  if(!dir){ document.getElementById('err').style.display='block'; return; }
+  sessionStorage.setItem('crn_dir', JSON.stringify(dir));
+  showMain(dir);
 }
 
-// ── ШАГ 1: ГОРОДА ─────────────────────────────────────────────────────────────
-function renderCities(){
-  const cities=[...new Set(STORES.map(s=>s.city))];
-  document.getElementById('city-list').innerHTML = cities.map(c=>`
-    <div class="pick-item" onclick="selectCity('${c}')">
-      <span>${c}</span><span class="arrow">›</span>
-    </div>`).join('');
+function doLogout(){
+  sessionStorage.removeItem('crn_dir');
+  DIR=null;
+  document.getElementById('login').style.display='block';
+  document.getElementById('main').style.display='none';
+  document.getElementById('phone').value='';
+  document.getElementById('password').value='';
 }
 
-function selectCity(city){
-  state.city=city; state.store=null; state.role=null;
-  renderStores(); goStep(2);
+function showMain(dir){
+  DIR=dir;
+  document.getElementById('login').style.display='none';
+  document.getElementById('main').style.display='block';
+  document.getElementById('bar-store').textContent=dir.store;
+  document.getElementById('bar-sub').textContent=dir.city+' · '+dir.brand;
+  // плейсхолдеры
+  const seg=dir.seg;
+  const dp=document.getElementById('dir-s_plan'); if(dp) dp.placeholder=TO_PH[seg];
+  const df=document.getElementById('dir-s_fact'); if(df) df.placeholder=TO_PH[seg];
+  const ap=document.getElementById('ad-p_plan'); if(ap) ap.placeholder=SALES_PH[seg];
+  const af=document.getElementById('ad-p_fact'); if(af) af.placeholder=SALES_PH[seg];
+  const sp=document.getElementById('st-p_plan'); if(sp) sp.placeholder=SALES_PH[seg];
+  const sf=document.getElementById('st-p_fact'); if(sf) sf.placeholder=SALES_PH[seg];
+  const sa=document.getElementById('st-atv_plan'); if(sa) sa.placeholder=ATV_PH[seg];
+  const saf=document.getElementById('st-atv_fact'); if(saf) saf.placeholder=ATV_PH[seg];
+  // Шымкент — показываем поле часов
+  const hw=document.getElementById('st-hours-wrap');
+  if(hw) hw.style.display=dir.city==='Шымкент'?'block':'none';
+  // сбрасываем панель на директора
+  switchRole('dir', document.querySelector('.role-tab'));
 }
 
-// ── ШАГ 2: МАГАЗИНЫ ───────────────────────────────────────────────────────────
-function renderStores(){
-  const stores = STORES.filter(s=>s.city===state.city);
-  const corneli = stores.filter(s=>s.brand==='CORNELI');
-  const crinzo  = stores.filter(s=>s.brand==='CRINZO');
-  let html='';
-  if(corneli.length){
-    html+='<div class="section-label">CORNELI</div>';
-    html+=corneli.map(s=>`
-      <div class="pick-item" onclick="selectStore(${JSON.stringify(s).replace(/"/g,'&quot;')})">
-        <div><div>${s.store}</div><div class="sub">${s.brand}${s.shymkent?' · ставка 850 тг/час':''}</div></div>
-        <span class="arrow">›</span>
-      </div>`).join('');
-  }
-  if(crinzo.length){
-    html+='<div class="section-label">CRINZO</div>';
-    html+=crinzo.map(s=>`
-      <div class="pick-item" onclick="selectStore(${JSON.stringify(s).replace(/"/g,'&quot;')})">
-        <div><div>${s.store}</div><div class="sub">${s.brand}${s.shymkent?' · ставка 850 тг/час':''}</div></div>
-        <span class="arrow">›</span>
-      </div>`).join('');
-  }
-  document.getElementById('store-list').innerHTML = html;
+function switchRole(role, tab){
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.role-panel').forEach(p=>p.classList.remove('active'));
+  if(tab) tab.classList.add('active');
+  else document.querySelectorAll('.role-tab')[['dir','ad','st'].indexOf(role)].classList.add('active');
+  document.getElementById('panel-'+role).classList.add('active');
+  calc(role);
 }
 
-function selectStore(store){
-  state.store=store; state.role=null;
-  renderRoles(); goStep(3);
-}
+function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
+function nextTier(scale,pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
 
-// ── ШАГ 3: ДОЛЖНОСТИ ──────────────────────────────────────────────────────────
-function renderRoles(){
-  const s=state.store;
-  document.getElementById('store-ctx3').innerHTML=`
-    <span class="change-btn" onclick="goStep(2);renderStores()">изменить</span>
-    <strong>${s.store}</strong>
-    <span>${s.city} · ${s.brand}</span>`;
-  document.getElementById('role-list').innerHTML = ROLES.map(r=>`
-    <div class="pick-item" onclick="selectRole('${r.key}')">
-      <span>${r.label}</span><span class="arrow">›</span>
-    </div>`).join('');
-}
+function calc(role){
+  if(!DIR) return;
+  const scale=SCALES[DIR.seg][role];
+  const core=CORE[role];
+  const rows=[];let total=0;
+  let plan=0,fact=0;
 
-function selectRole(roleKey){
-  state.role=roleKey;
-  buildCalc(); goStep(4);
-}
-
-// ── ШАГ 4: КАЛЬКУЛЯТОР ────────────────────────────────────────────────────────
-function buildCalc(){
-  const s=state.store, rk=state.role;
-  const seg=s.seg, shymkent=!!s.shymkent;
-  const scale=SCALES[seg][rk];
-  const core=CORE[rk];
-  const isDir=rk==='dir', isSt=rk==='st';
-
-  document.getElementById('store-ctx4').innerHTML=`
-    <span class="change-btn" onclick="goStep(3);renderRoles()">изменить</span>
-    <strong>${ROLES.find(r=>r.key===rk).label} · ${s.store}</strong>
-    <span>${s.city} · ${s.brand}</span>`;
-
-  // форма
-  let form='';
-  if(isSt){
-    if(shymkent)
-      form+=`<div class="field"><label>Отработанные часы</label><input type="number" id="hours" placeholder="178" inputmode="numeric"></div>`;
-    form+=`<div class="row2">
-      <div class="field"><label>План ср. чек, тг</label><input type="number" id="atv_plan" placeholder="${ATV_PH[seg]}" inputmode="numeric"></div>
-      <div class="field"><label>Факт ср. чек, тг</label><input type="number" id="atv_fact" placeholder="${ATV_PH[seg]}" inputmode="numeric"></div>
-    </div>
-    <div class="row2">
-      <div class="field"><label>План продаж, тг</label><input type="number" id="p_plan" placeholder="${SALES_PH[seg]}" inputmode="numeric"></div>
-      <div class="field"><label>Факт / прогноз, тг</label><input type="number" id="p_fact" placeholder="${SALES_PH[seg]}" inputmode="numeric"></div>
-    </div>`;
-  } else if(rk==='ad'){
-    form+=`<div class="row2">
-      <div class="field"><label>План продаж, тг</label><input type="number" id="p_plan" placeholder="${SALES_PH[seg]}" inputmode="numeric"></div>
-      <div class="field"><label>Факт / прогноз, тг</label><input type="number" id="p_fact" placeholder="${SALES_PH[seg]}" inputmode="numeric"></div>
-    </div>`;
-    form+=kpiToggles(core);
+  if(role==='dir'){
+    plan=num('dir-s_plan'); fact=num('dir-s_fact');
+    let c=0,parts=[];
+    if(chk('dir-hr')){c+=core;parts.push('HR');}
+    if(chk('dir-fin')){c+=core;parts.push('FIN');}
+    if(chk('dir-stock')){c+=core;parts.push('Stock');}
+    rows.push(['Core KPI',parts.length?parts.join(' + '):'не выполнен',c]); total+=c;
+  } else if(role==='ad'){
+    plan=num('ad-p_plan'); fact=num('ad-p_fact');
+    let c=0,parts=[];
+    if(chk('ad-hr')){c+=core;parts.push('HR');}
+    if(chk('ad-fin')){c+=core;parts.push('FIN');}
+    if(chk('ad-stock')){c+=core;parts.push('Stock');}
+    rows.push(['Core KPI',parts.length?parts.join(' + '):'не выполнен',c]); total+=c;
   } else {
-    form+=`<div class="row2">
-      <div class="field"><label>План ТО магазина, тг</label><input type="number" id="s_plan" placeholder="${TO_PH[seg]}" inputmode="numeric"></div>
-      <div class="field"><label>Факт / прогноз ТО, тг</label><input type="number" id="s_fact" placeholder="${TO_PH[seg]}" inputmode="numeric"></div>
-    </div>`;
-    form+=kpiToggles(core);
-  }
-  document.getElementById('calc-form').innerHTML=form;
-
-  // шкала
-  const col1=isDir?'Выполнение плана ТО':'Выполнение личного плана';
-  document.getElementById('scale-title').textContent=isDir?'Шкала % от ТО магазина':'Шкала % от личных продаж';
-  const thead=`<tr><th>${col1}</th><th>Ставка</th></tr>`;
-  const tbody=scale.map((item,i)=>{
-    const [th,v]=item;
-    let lbl;
-    if(i===0) lbl=`до ${Math.round(scale[1][0]*100)}%`;
-    else if(i===scale.length-1) lbl=`от ${Math.round(th*100)}%`;
-    else lbl=`от ${Math.round(th*100)}% до ${Math.round(scale[i+1][0]*100)}%`;
-    const pctStr=(v*100).toFixed(2).replace(/\.?0+$/,'').replace('.',',')+',00%'.slice(0);
-    const ps=+(v*100).toFixed(4);
-    const pctLabel=ps%1===0?ps+'%':ps.toFixed(2).replace('.',',')+' %';
-    return `<tr data-idx="${i}"><td>${lbl}</td><td>${(v*100).toFixed(2).replace('.',',')}%</td></tr>`;
-  }).join('');
-  document.getElementById('scale-table').querySelector('thead').innerHTML=thead;
-  document.getElementById('scale-table').querySelector('tbody').innerHTML=tbody;
-
-  // события
-  document.querySelectorAll('#calc-form input, #calc-form input[type=checkbox]').forEach(el=>{
-    el.addEventListener('input',()=>calcRender(scale,core,rk,shymkent));
-    el.addEventListener('change',()=>calcRender(scale,core,rk,shymkent));
-  });
-  calcRender(scale,core,rk,shymkent);
-}
-
-function kpiToggles(core){
-  return `<div class="field"><label>Core KPI — по ${fmt(core)} тг каждый</label>
-    <div class="toggles">
-      <label class="tgl"><input type="checkbox" id="kpi_hr" checked><span>HR-бонус<small>0 увольнений, выполнение плана в нормах</small></span></label>
-      <label class="tgl"><input type="checkbox" id="kpi_fin" checked><span>FIN-бонус<small>≤3 ошибок дисциплины, 0 расхождений</small></span></label>
-      <label class="tgl"><input type="checkbox" id="kpi_stock" checked><span>Stock-бонус<small>лимиты по выгрузке и перемещениям</small></span></label>
-    </div></div>`;
-}
-
-function rateAt(scale, pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
-function nextTier(scale, pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
-
-function calcRender(scale, core, rk, shymkent){
-  const isDir=rk==='dir', isSt=rk==='st';
-  const rows=[]; let total=0;
-  let plan=0, fact=0;
-
-  if(isSt){
-    if(shymkent){
-      const h=num('hours'), pay=h*850;
-      rows.push(['Почасовая оплата',h?h+' ч × 850 тг':'введи часы',pay]); total+=pay;
+    plan=num('st-p_plan'); fact=num('st-p_fact');
+    if(DIR.city==='Шымкент'){
+      const h=num('st-hours'),pay=h*850;
+      rows.push(['Почасовая (850 тг/час)',h?h+' ч':'введи часы',pay]); total+=pay;
     }
-    const ap=num('atv_plan'),af=num('atv_fact');
+    const ap=num('st-atv_plan'),af=num('st-atv_fact');
     let atvB=0; const ap2=ap>0?af/ap:0;
     if(ap2>=1.1999)atvB=50000; else if(ap2>=0.9999)atvB=30000;
     rows.push(['Бонус за средний чек',ap>0?'выполнение '+(ap2*100).toFixed(1)+'%':'введи план и факт',atvB]); total+=atvB;
-    plan=num('p_plan'); fact=num('p_fact');
-  } else if(rk==='ad'){
-    plan=num('p_plan'); fact=num('p_fact');
-    let c=0; const parts=[];
-    if(chk('kpi_hr')){c+=core;parts.push('HR');}
-    if(chk('kpi_fin')){c+=core;parts.push('FIN');}
-    if(chk('kpi_stock')){c+=core;parts.push('Stock');}
-    rows.push(['Core KPI',parts.length?parts.join(' + '):'ни один не выполнен',c]); total+=c;
-  } else {
-    plan=num('s_plan'); fact=num('s_fact');
-    let c=0; const parts=[];
-    if(chk('kpi_hr')){c+=core;parts.push('HR');}
-    if(chk('kpi_fin')){c+=core;parts.push('FIN');}
-    if(chk('kpi_stock')){c+=core;parts.push('Stock');}
-    rows.push(['Core KPI',parts.length?parts.join(' + '):'ни один не выполнен',c]); total+=c;
   }
 
   const pct=plan>0?fact/plan:0;
   const r=rateAt(scale,pct);
   const bonus=fact*r;
-  const lbl=isDir?'% от товарооборота':'% от личных продаж';
+  const lbl=role==='dir'?'% от товарооборота':'% от личных продаж';
   rows.push([lbl,plan>0?'план '+(pct*100).toFixed(1)+'% → '+(r*100).toFixed(2).replace('.',',')+'%':'введи план и факт',bonus]);
   total+=bonus;
 
-  // подсветка шкалы
-  document.querySelectorAll('#scale-table tbody tr').forEach(tr=>{
-    tr.classList.remove('active-row');
-    const i=parseInt(tr.dataset.idx);
-    const th=scale[i][0];
-    const thN=scale[i+1]?scale[i+1][0]:999;
-    if(plan>0 && pct>=th-1e-9 && pct<thN-1e-9) tr.classList.add('active-row');
-    if(plan>0 && i===scale.length-1 && pct>=scale[i][0]-1e-9) tr.classList.add('active-row');
-  });
-
-  document.getElementById('total').innerHTML=plan>0||shymkent?'<b>'+fmt(total)+'</b>':'—';
-  document.getElementById('breakdown').innerHTML=rows.map(([n,note,amt])=>
+  document.getElementById(role+'-total').innerHTML=plan>0||role==='st'?'<b>'+fmt(total)+'</b>':'—';
+  document.getElementById(role+'-bd').innerHTML=rows.map(([n,note,amt])=>
     `<div class="bd-row"><div>${n}${note?`<small>${note}</small>`:''}</div><div class="amt${amt?'':' zero'}">${fmt(amt)}</div></div>`
   ).join('');
 
-  // следующий порог
-  const card=document.getElementById('nextcard');
+  const card=document.getElementById(role+'-next');
   if(plan>0){
     const nt=nextTier(scale,pct);
     if(nt){
@@ -402,29 +286,16 @@ function calcRender(scale, core, rk, shymkent){
         <div class="bar-marks"><span>${(pct*100).toFixed(1)}% сейчас</span><span>${Math.round(th*100)}%</span></div>`;
     } else {
       card.className='next max';
-      card.innerHTML=`<div class="next-ey">Максимальная ставка</div>
-        <div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%. Каждая продажа по максимуму.</div>`;
+      card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%. Каждая продажа по максимуму.</div>`;
     }
     card.classList.remove('hidden');
   } else card.classList.add('hidden');
 }
 
-// ── СТАРТ + РОУТИНГ ПО БРЕНДУ ─────────────────────────────────────────────────
+// восстановление сессии
 (function(){
-  const path = location.pathname.replace(/\/+$/,'').toLowerCase();
-  const brandFilter = path.endsWith('/corneli') ? 'CORNELI'
-                    : path.endsWith('/crinzo')  ? 'CRINZO'
-                    : null;
-  if(brandFilter){
-    const filtered = STORES.filter(s => s.brand === brandFilter);
-    STORES.length = 0;
-    filtered.forEach(s => STORES.push(s));
-    const badge = document.createElement('div');
-    badge.style.cssText = 'display:inline-block;margin-top:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid currentColor;padding:4px 10px;opacity:.65';
-    badge.textContent = brandFilter;
-    document.querySelector('header h1').after(badge);
-  }
-  renderCities();
+  const saved=sessionStorage.getItem('crn_dir');
+  if(saved){try{showMain(JSON.parse(saved));}catch(e){sessionStorage.removeItem('crn_dir');}}
 })();
 </script>
 </body>
