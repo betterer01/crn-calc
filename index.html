@@ -269,18 +269,20 @@ function renderScaleTable(containerId, scale, currentPct){
     el=document.createElement('div'); el.id=containerId;
     parent.parentNode.insertBefore(el, parent.nextSibling);
   }
-  var labels = {0:'<90%', 0.9:'90%', 0.95:'95%', 1.0:'100%', 1.1:'110%', 1.2:'120%'};
-  var html='<div class=scale-hdr>Шкала бонусных %</div><table class=scale-tbl><thead><tr><th>Порог</th><th>Ставка</th></tr></thead><tbody>';
+  var html='<div class=scale-wrap><div class=scale-hdr>Шкала бонусных %</div><table class=scale-tbl><thead><tr><th>Выполнение плана</th><th>Ставка от продаж</th></tr></thead><tbody>';
   for(var i=0;i<scale.length;i++){
     var th=scale[i][0], rate=scale[i][1];
     var nextTh = i<scale.length-1 ? scale[i+1][0] : 999;
     var isActive = currentPct>=th-1e-9 && currentPct<nextTh-1e-9;
     if(i===scale.length-1 && currentPct>=th-1e-9) isActive=true;
     var cls=isActive?' class=active-tier':'';
-    var thLabel=labels[th]||(Math.round(th*100)+'%');
-    html+='<tr'+cls+'><td>'+(th===0?'до 90%':'≥'+thLabel)+'</td><td>'+(rate*100).toFixed(2).replace('.',',')+'%</td></tr>';
+    var rangeLabel;
+    if(i===0) rangeLabel='до '+(Math.round(scale[1][0]*100))+'%';
+    else if(i===scale.length-1) rangeLabel='от '+(Math.round(th*100))+'%';
+    else rangeLabel=(Math.round(th*100))+'% — '+(Math.round(scale[i+1][0]*100)-1)+'%';
+    html+='<tr'+cls+'><td>'+rangeLabel+'</td><td>'+(rate*100).toFixed(2).replace('.',',')+'%</td></tr>';
   }
-  html+='</tbody></table>';
+  html+='</tbody></table></div>';
   el.innerHTML=html;
 }
 function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
