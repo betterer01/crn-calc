@@ -112,6 +112,8 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
   color:var(--mut);margin-top:4px;font-variant-numeric:tabular-nums}
 .next.max{border-color:var(--good)}.next.max .next-ey{color:var(--good)}
 .hidden{display:none}
+.scale-wrap{display:none}
+.scale-wrap{display:none}
 .disclaimer{margin-top:20px;font-size:10.5px;color:var(--mut);line-height:1.6}
 @media(max-width:380px){.total-num{font-size:32px}.row2{grid-template-columns:1fr}}
 </style>
@@ -407,8 +409,23 @@ function calcRender(scale, core, rk, shymkent){
   } else card.classList.add('hidden');
 }
 
-// ── СТАРТ ──────────────────────────────────────────────────────────────────────
-renderCities();
+// ── СТАРТ + РОУТИНГ ПО БРЕНДУ ─────────────────────────────────────────────────
+(function(){
+  const path = location.pathname.replace(/\/+$/,'').toLowerCase();
+  const brandFilter = path.endsWith('/corneli') ? 'CORNELI'
+                    : path.endsWith('/crinzo')  ? 'CRINZO'
+                    : null;
+  if(brandFilter){
+    const filtered = STORES.filter(s => s.brand === brandFilter);
+    STORES.length = 0;
+    filtered.forEach(s => STORES.push(s));
+    const badge = document.createElement('div');
+    badge.style.cssText = 'display:inline-block;margin-top:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid currentColor;padding:4px 10px;opacity:.65';
+    badge.textContent = brandFilter;
+    document.querySelector('header h1').after(badge);
+  }
+  renderCities();
+})();
 </script>
 </body>
 </html>
