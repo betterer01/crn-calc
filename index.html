@@ -69,6 +69,15 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .bar-marks{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:4px;font-variant-numeric:tabular-nums}
 .next.max{border-color:var(--good)}.next.max .next-ey{color:var(--good)}
 .hidden{display:none}
+.scale-wrap{margin-top:18px}
+.scale-title{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;font-weight:700}
+.scale-t{width:100%;border-collapse:collapse;background:var(--card);font-size:13px}
+.scale-t th{background:#eae6dc;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:8px 6px;border:1px solid var(--line);font-weight:700}
+.scale-t td{padding:9px 6px;border:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.scale-t tr.active-row td{background:#fff8e8;font-weight:700}
+.scale-t tr.active-row td:first-child::before{content:"► ";color:var(--accent)}
+.scale-t tr.active-row td:last-child{color:var(--accent-ink);font-size:15px}
+.scale-t tr.active-row td:last-child::after{content:" ◄";color:var(--accent);font-size:12px}
 .disclaimer{margin-top:18px;font-size:10.5px;color:var(--mut);line-height:1.6}
 @media(max-width:380px){.total-num{font-size:30px}.row2{grid-template-columns:1fr}}
 </style>
@@ -119,6 +128,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="reg-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="reg-bd"></div>
     <div class="next hidden" id="reg-next"></div>
+  <div class="scale-wrap" id="reg-scale-wrap" style="display:none">
+    <div class="scale-title" id="reg-scale-title">Шкала</div>
+    <table class="scale-t"><thead id="reg-scale-head"></thead><tbody id="reg-scale-body"></tbody></table>
+  </div>
   </div>
 
   <!-- ДИРЕКТОР -->
@@ -135,6 +148,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="dir-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="dir-bd"></div>
     <div class="next hidden" id="dir-next"></div>
+  <div class="scale-wrap" id="dir-scale-wrap" style="display:none">
+    <div class="scale-title" id="dir-scale-title">Шкала</div>
+    <table class="scale-t"><thead id="dir-scale-head"></thead><tbody id="dir-scale-body"></tbody></table>
+  </div>
   </div>
 
   <!-- АДМИНИСТРАТОР -->
@@ -153,6 +170,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="ad-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="ad-bd"></div>
     <div class="next hidden" id="ad-next"></div>
+  <div class="scale-wrap" id="ad-scale-wrap" style="display:none">
+    <div class="scale-title" id="ad-scale-title">Шкала</div>
+    <table class="scale-t"><thead id="ad-scale-head"></thead><tbody id="ad-scale-body"></tbody></table>
+  </div>
   </div>
 
   <!-- СТИЛИСТ -->
@@ -169,6 +190,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="st-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="st-bd"></div>
     <div class="next hidden" id="st-next"></div>
+  <div class="scale-wrap" id="st-scale-wrap" style="display:none">
+    <div class="scale-title" id="st-scale-title">Шкала</div>
+    <table class="scale-t"><thead id="st-scale-head"></thead><tbody id="st-scale-body"></tbody></table>
+  </div>
   </div>
 
   <div class="disclaimer">Расчёт по системе оплаты труда CRN Group, приказ от 30.04.2026. Итоговое начисление — по данным 1С. При расхождении приоритет у расчётной ведомости.</div>
@@ -261,6 +286,27 @@ function changeSeg(seg){
   const saf=document.getElementById('st-atv_fact'); if(saf) saf.placeholder=ATV_PH[seg]||'200 000';
   ['dir','ad','st'].forEach(r=>calc(r));
 }
+function renderScale(role, scale, pct){
+  const wrap = document.getElementById(role+'-scale-wrap');
+  const head = document.getElementById(role+'-scale-head');
+  const body = document.getElementById(role+'-scale-body');
+  const title = document.getElementById(role+'-scale-title');
+  if(!wrap) return;
+  wrap.style.display='block';
+  const col1 = role==='dir'||role==='reg' ? 'Выполнение плана ТО' : 'Выполнение личного плана';
+  if(title) title.textContent = role==='reg' ? 'Шкала % от ТО сети' : role==='dir' ? 'Шкала % от ТО магазина' : 'Шкала % от личных продаж';
+  head.innerHTML = `<tr><th>${col1}</th><th>Ставка</th></tr>`;
+  const sc = scale['reg'] || scale;
+  body.innerHTML = sc.map((item,i)=>{
+    const [th,v]=item;
+    let lbl;
+    if(i===0) lbl=`до ${Math.round(sc[1][0]*100)}%`;
+    else if(i===sc.length-1) lbl=`от ${Math.round(th*100)}%`;
+    else lbl=`от ${Math.round(th*100)}% до ${Math.round(sc[i+1][0]*100)}%`;
+    const active = pct>=th-1e-9 && (i===sc.length-1 || pct<sc[i+1][0]-1e-9);
+    return `<tr class="${active?'active-row':''}"><td>${lbl}</td><td>${(v*100).toFixed(2).replace('.',',')}%</td></tr>`;
+  }).join('');
+}
 function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
 function nextTier(scale,pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
 
@@ -317,6 +363,7 @@ function calc(role){
       } else {card.className='next max';card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%.</div>`;}
       card.classList.remove('hidden');
     } else card.classList.add('hidden');
+    renderScale('reg', scale, pct);
     return;
   }
   const pct=plan>0?fact/plan:0;
@@ -350,6 +397,7 @@ function calc(role){
     }
     card.classList.remove('hidden');
   } else card.classList.add('hidden');
+  renderScale(role, SCALES[DIR.seg], pct);
 }
 
 // восстановление сессии
