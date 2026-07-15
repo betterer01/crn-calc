@@ -324,6 +324,20 @@ function calc(role){
 
   if(role==='reg'){
     plan=num('reg-plan'); fact=num('reg-to');
+    // Спецзадача
+    const spec = document.getElementById('reg-spec');
+    if(spec && spec.checked){ rows.push(['Спецзадача КД','выполнена · ежемесячно',100000]); total+=100000; }
+    else { rows.push(['Спецзадача КД','не выполнена · ежемесячно',0]); }
+    // Квартальный Core KPI
+    let qcore=0; const qparts=[];
+    const rhr=document.getElementById('reg-hr');
+    const rfin=document.getElementById('reg-fin');
+    const rstock=document.getElementById('reg-stock');
+    if(rhr&&rhr.checked){qcore+=150000;qparts.push('HR');}
+    if(rfin&&rfin.checked){qcore+=150000;qparts.push('FIN');}
+    if(rstock&&rstock.checked){qcore+=150000;qparts.push('Stock');}
+    rows.push(['Core KPI квартал',qparts.length?qparts.join(' + ')+' · квартально':'не выполнен',qcore]);
+    total+=qcore;
   } else if(role==='dir'){
     plan=num('dir-s_plan'); fact=num('dir-s_fact');
     let c=0,parts=[];
