@@ -96,10 +96,20 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <span class="logout" onclick="doLogout()">Выйти</span>
   </div>
 
-  <div class="role-tabs">
+  <div class="role-tabs" id="role-tabs">
+    <div class="role-tab hidden" id="tab-reg" onclick="switchRole('reg',this)">Мой KPI</div>
     <div class="role-tab active" onclick="switchRole('dir',this)">Директор</div>
     <div class="role-tab" onclick="switchRole('ad',this)">Администратор</div>
     <div class="role-tab" onclick="switchRole('st',this)">Стилист</div>
+  </div>
+
+  <!-- РЕГИОНАЛЬНЫЙ -->
+  <div class="role-panel" id="panel-reg">
+    <div class="field"><label>Факт ТО сети CORNELI за месяц, тг</label><input type="number" id="reg-to" inputmode="numeric" placeholder="420 000 000" oninput="calc('reg')"></div>
+    <div class="field"><label>План ТО сети CORNELI за месяц, тг</label><input type="number" id="reg-plan" inputmode="numeric" placeholder="420 000 000" oninput="calc('reg')"></div>
+    <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="reg-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
+    <div class="breakdown" id="reg-bd"></div>
+    <div class="next hidden" id="reg-next"></div>
   </div>
 
   <!-- ДИРЕКТОР -->
@@ -157,8 +167,8 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 </div>
 
 <script>
-const DIRECTORS=[{"phone": "77082340740", "name": "Сейтбек А.", "store": "AKTAU", "city": "Актау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77751674260", "name": "Имамбекова Г.", "store": "AL-FARABI", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77027449155", "name": "Шайкулова М.", "store": "MEGA ALMA-ATA", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77077850635", "name": "Кожевникова У.", "store": "MEGA PARK", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77477646940", "name": "Калиханова З.", "store": "MEGA SILKWAY", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77075186643", "name": "Мукеева А.", "store": "OUTLET", "city": "Алматы", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77054123227", "name": "Амирханова А.", "store": "OUTLET", "city": "Астана", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77779101234", "name": "Кульбатырова И.", "store": "TURAN", "city": "Астана", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77022949998", "name": "Алимбекова А.", "store": "BAIZAAR", "city": "Атырау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77716598687", "name": "Козяев В.", "store": "GRAND PARK", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77777002001", "name": "Қуаныш Ұ.", "store": "КУНАЕВА", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77059702555", "name": "Романова З.", "store": "KARAGANDA", "city": "Қарағанды", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77476394503", "name": "Дилдабай А.", "store": "OUTLET", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"phone": "77087774289", "name": "Жазира", "store": "ZHELTOKSAN", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769907369", "name": "Әмірәлі А.", "store": "MEGA SILKWAY", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77054287861", "name": "Садуақас А.", "store": "МАНГІЛІК ЕЛ", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77009566306", "name": "Әбдіхан Д.", "store": "НУРСАТ", "city": "Шымкент", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769001111", "name": "Қосынбаев Ж.", "store": "KYZYLORDA", "city": "Қызылорда", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77028726776", "name": "Еркебулан", "store": "HRD", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77789810418", "name": "Фариза", "store": "Региональный директор", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}];
-const SCALES={"corneli": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "corneli_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo": {"dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}};
+const DIRECTORS=[{"phone": "77082340740", "name": "Сейтбек А.", "store": "AKTAU", "city": "Актау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77751674260", "name": "Имамбекова Г.", "store": "AL-FARABI", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77027449155", "name": "Шайкулова М.", "store": "MEGA ALMA-ATA", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77077850635", "name": "Кожевникова У.", "store": "MEGA PARK", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77477646940", "name": "Калиханова З.", "store": "MEGA SILKWAY", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77075186643", "name": "Мукеева А.", "store": "OUTLET", "city": "Алматы", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77054123227", "name": "Амирханова А.", "store": "OUTLET", "city": "Астана", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77779101234", "name": "Кульбатырова И.", "store": "TURAN", "city": "Астана", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77022949998", "name": "Алимбекова А.", "store": "BAIZAAR", "city": "Атырау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77716598687", "name": "Козяев В.", "store": "GRAND PARK", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77777002001", "name": "Қуаныш Ұ.", "store": "КУНАЕВА", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77059702555", "name": "Романова З.", "store": "KARAGANDA", "city": "Қарағанды", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77476394503", "name": "Дилдабай А.", "store": "OUTLET", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"phone": "77087774289", "name": "Жазира", "store": "ZHELTOKSAN", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769907369", "name": "Әмірәлі А.", "store": "MEGA SILKWAY", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77054287861", "name": "Садуақас А.", "store": "МАНГІЛІК ЕЛ", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77009566306", "name": "Әбдіхан Д.", "store": "НУРСАТ", "city": "Шымкент", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769001111", "name": "Қосынбаев Ж.", "store": "KYZYLORDA", "city": "Қызылорда", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77028726776", "name": "Еркебулан", "store": "HRD", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77789810418", "name": "Фариза", "store": "Региональный директор", "city": "Алматы", "brand": "CORNELI", "seg": "regional_corneli"}];
+const SCALES={"corneli": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "corneli_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo": {"dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "regional_corneli": {"reg": [[0, 0], [0.95, 0.001], [1.0, 0.0013], [1.05, 0.0014], [1.1, 0.0015]], "dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}};
 const CORE={"dir": 40000, "ad": 30000, "st": 0};
 const TO_PH={"corneli": "60 000 000", "corneli_outlet": "35 000 000", "crinzo": "25 000 000", "crinzo_outlet": "20 000 000"};
 const SALES_PH={"corneli": "10 000 000", "corneli_outlet": "8 000 000", "crinzo": "5 000 000", "crinzo_outlet": "5 000 000"};
@@ -195,6 +205,9 @@ function showMain(dir){
   DIR=dir;
   document.getElementById('login').style.display='none';
   document.getElementById('main').style.display='block';
+  const tabReg=document.getElementById('tab-reg');
+  if(tabReg) tabReg.classList.toggle('hidden', dir.seg!=='regional_corneli');
+  if(dir.seg==='regional_corneli') switchRole('reg', document.getElementById('tab-reg'));
   document.getElementById('bar-store').textContent=dir.store;
   document.getElementById('bar-sub').textContent=dir.city+' · '+dir.brand;
   // плейсхолдеры
@@ -233,7 +246,9 @@ function calc(role){
   const rows=[];let total=0;
   let plan=0,fact=0;
 
-  if(role==='dir'){
+  if(role==='reg'){
+    plan=num('reg-plan'); fact=num('reg-to');
+  } else if(role==='dir'){
     plan=num('dir-s_plan'); fact=num('dir-s_fact');
     let c=0,parts=[];
     if(chk('dir-hr')){c+=core;parts.push('HR');}
@@ -259,6 +274,26 @@ function calc(role){
     rows.push(['Бонус за средний чек',ap>0?'выполнение '+(ap2*100).toFixed(1)+'%':'введи план и факт',atvB]); total+=atvB;
   }
 
+  if(role==='reg'){
+    const pct=plan>0?fact/plan:0;
+    const r=rateAt(scale['reg']||scale,pct);
+    const bonus=fact*r;
+    rows.push(['% от ТО сети CORNELI',plan>0?'выполнение '+(pct*100).toFixed(1)+'% → '+(r*100).toFixed(2).replace('.',',')+'%':'введи план и факт',bonus]);
+    total+=bonus;
+    document.getElementById('reg-total').innerHTML=plan>0?'<b>'+fmt(total)+'</b>':'—';
+    document.getElementById('reg-bd').innerHTML=rows.map(([n,note,amt])=>
+      `<div class="bd-row"><div>${n}${note?`<small>${note}</small>`:''}</div><div class="amt${amt?'':' zero'}">${fmt(amt)}</div></div>`).join('');
+    const card=document.getElementById('reg-next');
+    if(plan>0){
+      const nt=nextTier(scale['reg']||scale,pct);
+      if(nt){const [th,nr]=nt;const need=plan*th-fact;const gain=(fact+need)*nr-bonus;
+        card.className='next';
+        card.innerHTML=`<div class="next-ey">До следующего уровня</div><div class="next-main">Ещё <b>${fmt(need)}</b> — порог ${Math.round(th*100)}%. Ставка вырастет с ${(r*100).toFixed(2).replace('.',',')}% до ${(nr*100).toFixed(2).replace('.',',')}%.</div><div class="next-gain">+ ${fmt((fact+need)*nr-bonus)} к бонусу</div><div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct/th*100)}%"></div></div><div class="bar-marks"><span>${(pct*100).toFixed(1)}%</span><span>${Math.round(th*100)}%</span></div>`;
+      } else {card.className='next max';card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%.</div>`;}
+      card.classList.remove('hidden');
+    } else card.classList.add('hidden');
+    return;
+  }
   const pct=plan>0?fact/plan:0;
   const r=rateAt(scale,pct);
   const bonus=fact*r;
