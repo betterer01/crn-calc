@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRN · Калькулятор директора</title>
+<style>
+:root{
+  --ink:#17151a; --paper:#f6f4ef; --card:#fff; --line:#e3ded4;
+  --mut:#8a8478; --accent:#8a6d3b; --accent-ink:#6f5527; --good:#2e7d4f; --red:#b03030;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,system-ui,sans-serif;background:var(--paper);
+  color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:440px;margin:0 auto;padding:0 16px 60px}
+header{padding:28px 0 16px;border-bottom:1px solid var(--ink);margin-bottom:24px}
+.hrow{display:flex;justify-content:space-between;align-items:baseline}
+.logo{font-size:12px;letter-spacing:.38em;font-weight:700}
+.ver{font-size:9px;color:var(--mut)}
+h1{font-size:24px;font-weight:300;margin-top:10px;line-height:1.2}
+h1 b{font-weight:700}
+
+/* ЛОГИН */
+#login-screen{padding-top:8px}
+.field{margin-bottom:14px}
+label{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:6px}
+input[type=tel],input[type=password],input[type=number]{
+  width:100%;padding:13px 14px;font-size:17px;font-family:inherit;
+  border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--ink);
+  appearance:none;-webkit-appearance:none}
+input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.btn{width:100%;padding:15px;background:var(--ink);color:var(--paper);
+  font-size:15px;font-family:inherit;border:none;cursor:pointer;
+  letter-spacing:.04em;margin-top:8px}
+.btn:active{opacity:.85}
+.error{color:var(--red);font-size:13px;margin-top:10px;display:none}
+.hint{font-size:11.5px;color:var(--mut);margin-top:14px;line-height:1.6}
+
+/* КАЛЬКУЛЯТОР */
+#calc-screen{display:none}
+.store-card{background:var(--card);border:1px solid var(--line);
+  padding:14px 16px;margin-bottom:22px}
+.store-card .store-name{font-size:17px;font-weight:600}
+.store-card .store-sub{font-size:12px;color:var(--mut);margin-top:3px}
+.logout{float:right;font-size:11px;color:var(--mut);cursor:pointer;
+  text-decoration:underline;margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toggles{display:flex;flex-direction:column;gap:7px}
+.tgl{display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--line);padding:11px 13px;cursor:pointer;font-size:13.5px}
+.tgl input{width:19px;height:19px;accent-color:var(--accent);flex-shrink:0}
+.tgl small{color:var(--mut);display:block;font-size:11px;margin-top:2px}
+.total-card{background:var(--ink);color:var(--paper);padding:22px 18px;margin-top:6px}
+.total-label{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.65}
+.total-num{font-size:38px;font-weight:300;margin-top:5px;font-variant-numeric:tabular-nums}
+.total-num b{font-weight:700}
+.total-sub{font-size:10px;opacity:.5;margin-top:4px}
+.breakdown{background:var(--card);border:1px solid var(--line);border-top:none}
+.bd-row{display:flex;justify-content:space-between;align-items:baseline;
+  padding:11px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+.bd-row:last-child{border-bottom:none}
+.bd-row .amt{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.bd-row .amt.zero{color:var(--mut);font-weight:400}
+.bd-row small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
+.next{margin-top:20px;border:2px solid var(--accent);background:var(--card);padding:16px 18px}
+.next-ey{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent-ink);font-weight:700}
+.next-main{font-size:17px;line-height:1.45;margin-top:9px}
+.next-main b{border-bottom:2px solid var(--accent)}
+.next-gain{margin-top:8px;font-size:14px;color:var(--good);font-weight:600}
+.bar{height:7px;background:var(--line);margin-top:12px}
+.bar-fill{height:100%;background:var(--accent);transition:width .4s}
+.bar-marks{display:flex;justify-content:space-between;font-size:10px;
+  color:var(--mut);margin-top:4px;font-variant-numeric:tabular-nums}
+.next.max{border-color:var(--good)}.next.max .next-ey{color:var(--good)}
+.hidden{display:none}
+.disclaimer{margin-top:20px;font-size:10.5px;color:var(--mut);line-height:1.6}
+@media(max-width:380px){.total-num{font-size:32px}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="hrow"><div class="logo">CRN GROUP</div><div class="ver">приказ 30.04.2026</div></div>
+  <h1>Калькулятор <b>директора</b></h1>
+</header>
+
+<!-- ЛОГИН -->
+<div id="login-screen">
+  <div class="field">
+    <label>Номер телефона</label>
+    <input type="tel" id="phone" placeholder="7700 000 00 00" inputmode="numeric">
+  </div>
+  <div class="field">
+    <label>Пароль</label>
+    <input type="password" id="password" placeholder="••••••••">
+  </div>
+  <button class="btn" onclick="doLogin()">Войти</button>
+  <div class="error" id="login-error">Неверный телефон или пароль</div>
+  <div class="hint">Введи номер телефона в формате 77001234567 и общий пароль. По вопросам — обратись к HR.</div>
+</div>
+
+<!-- КАЛЬКУЛЯТОР -->
+<div id="calc-screen">
+  <div class="store-card" id="store-card">
+    <span class="logout" onclick="doLogout()">Выйти</span>
+    <div class="store-name" id="store-name"></div>
+    <div class="store-sub" id="store-sub"></div>
+  </div>
+  <div class="field">
+    <label>План ТО магазина, тг</label>
+    <input type="number" id="s_plan" inputmode="numeric">
+  </div>
+  <div class="field">
+    <label>Факт / прогноз ТО, тг</label>
+    <input type="number" id="s_fact" inputmode="numeric">
+  </div>
+  <div class="field">
+    <label>Core KPI — по 40 000 тг каждый</label>
+    <div class="toggles">
+      <label class="tgl"><input type="checkbox" id="kpi_hr" checked>
+        <span>HR-бонус<small>0 увольнений, план в допустимых нормах</small></span></label>
+      <label class="tgl"><input type="checkbox" id="kpi_fin" checked>
+        <span>FIN-бонус<small>≤3 ошибок дисциплины, 0 расхождений</small></span></label>
+      <label class="tgl"><input type="checkbox" id="kpi_stock" checked>
+        <span>Stock-бонус<small>лимиты по выгрузке и перемещениям</small></span></label>
+    </div>
+  </div>
+  <div class="total-card">
+    <div class="total-label">Прогноз бонуса за месяц</div>
+    <div class="total-num" id="total">—</div>
+    <div class="total-sub">до налогов · ориентировочно</div>
+  </div>
+  <div class="breakdown" id="breakdown"></div>
+  <div class="next hidden" id="nextcard"></div>
+  <div class="disclaimer">Расчёт по системе оплаты труда CRN Group, приказ от 30.04.2026. Итоговое начисление — по данным 1С. При расхождении приоритет у расчётной ведомости.</div>
+</div>
+</div>
+
+<script>
+
+const DIRECTORS = [{"phone": "77082340740", "name": "Сейтбек А.", "store": "AKTAU", "city": "Актау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77751674260", "name": "Имамбекова Г.", "store": "AL-FARABI", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77027449155", "name": "Шайкулова М.", "store": "MEGA ALMA-ATA", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77075186643", "name": "Мукеева А.", "store": "OUTLET", "city": "Алматы", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77054123227", "name": "Амирханова А.", "store": "OUTLET", "city": "Астана", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77779101234", "name": "Кульбатырова И.", "store": "TURAN", "city": "Астана", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77022949998", "name": "Алимбекова А.", "store": "BAIZAAR", "city": "Атырау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77059702555", "name": "Романова З.", "store": "KARAGANDA", "city": "Қарағанды", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77077850635", "name": "Кожевникова У.", "store": "MEGA PARK", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77477646940", "name": "Калиханова З.", "store": "MEGA SILKWAY", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77716598687", "name": "Козяев В.", "store": "GRAND PARK", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77777002001", "name": "Қуаныш Ұ.", "store": "КУНАЕВА", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77476394503", "name": "Дилдабай А.", "store": "OUTLET", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"phone": "77054287861", "name": "Садуақас А.", "store": "МАНГІЛІК ЕЛ", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769907369", "name": "Әмірәлі А.", "store": "MEGA SILKWAY", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769001111", "name": "Қосынбаев Ж.", "store": "KYZYLORDA", "city": "Қызылорда", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77009566306", "name": "Әбдіхан Д.", "store": "НУРСАТ", "city": "Шымкент", "brand": "CRINZO", "seg": "crinzo"}];
+const SCALES = {"corneli": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "corneli_outlet": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "crinzo": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "crinzo_outlet": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]]};
+const TO_PH = {"corneli": "60 000 000", "corneli_outlet": "35 000 000", "crinzo": "25 000 000", "crinzo_outlet": "20 000 000"};
+const CORE = 40000;
+const APP_PASSWORD = "CRN2026";
+
+const fmt = n => Math.round(n).toLocaleString('ru-RU') + ' тг';
+const num = id => { const el=document.getElementById(id); if(!el)return 0; const v=parseFloat(el.value.replace(/\s/g,'')); return isNaN(v)?0:v; };
+const chk = id => { const el=document.getElementById(id); return el?el.checked:false; };
+
+let currentDir = null;
+
+// ── АВТОРИЗАЦИЯ ────────────────────────────────────────────────────────────────
+function normalizePhone(p){ return p.replace(/[^0-9]/g,''); }
+
+function doLogin(){
+  const phone = normalizePhone(document.getElementById('phone').value);
+  const pass  = document.getElementById('password').value.trim();
+  const err   = document.getElementById('login-error');
+  err.style.display='none';
+  if(pass !== APP_PASSWORD){
+    err.style.display='block'; return;
+  }
+  const dir = DIRECTORS.find(d => normalizePhone(d.phone) === phone);
+  if(!dir){
+    err.style.display='block'; return;
+  }
+  // Сохраняем сессию
+  sessionStorage.setItem('crn_dir', JSON.stringify(dir));
+  showCalc(dir);
+}
+
+function doLogout(){
+  sessionStorage.removeItem('crn_dir');
+  currentDir=null;
+  document.getElementById('login-screen').style.display='block';
+  document.getElementById('calc-screen').style.display='none';
+  document.getElementById('phone').value='';
+  document.getElementById('password').value='';
+}
+
+function showCalc(dir){
+  currentDir=dir;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('calc-screen').style.display='block';
+  document.getElementById('store-name').textContent=dir.store;
+  document.getElementById('store-sub').textContent=dir.city+' · '+dir.brand;
+  document.getElementById('s_plan').placeholder=TO_PH[dir.seg]||'60 000 000';
+  // вешаем события
+  ['s_plan','s_fact'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', calcRender);
+  });
+  ['kpi_hr','kpi_fin','kpi_stock'].forEach(id=>{
+    document.getElementById(id).addEventListener('change', calcRender);
+  });
+  calcRender();
+}
+
+// ── РАСЧЁТ ────────────────────────────────────────────────────────────────────
+function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
+function nextTier(scale,pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
+
+function calcRender(){
+  if(!currentDir) return;
+  const scale = SCALES[currentDir.seg];
+  const plan=num('s_plan'), fact=num('s_fact');
+  const rows=[];let total=0;
+  // Core KPI
+  let core=0; const parts=[];
+  if(chk('kpi_hr')){core+=CORE;parts.push('HR');}
+  if(chk('kpi_fin')){core+=CORE;parts.push('FIN');}
+  if(chk('kpi_stock')){core+=CORE;parts.push('Stock');}
+  rows.push(['Core KPI',parts.length?parts.join(' + '):'ни один не выполнен',core]);
+  total+=core;
+  // % от ТО
+  const pct=plan>0?fact/plan:0;
+  const r=rateAt(scale,pct);
+  const bonus=fact*r;
+  rows.push(['% от товарооборота',plan>0?'план '+(pct*100).toFixed(1)+'% → '+(r*100).toFixed(2).replace('.',',')+'%':'введи план и факт',bonus]);
+  total+=bonus;
+
+  document.getElementById('total').innerHTML=plan>0?'<b>'+fmt(total)+'</b>':'—';
+  document.getElementById('breakdown').innerHTML=rows.map(([n,note,amt])=>
+    `<div class="bd-row"><div>${n}${note?`<small>${note}</small>`:''}</div><div class="amt${amt?'':' zero'}">${fmt(amt)}</div></div>`
+  ).join('');
+
+  // следующий порог
+  const card=document.getElementById('nextcard');
+  if(plan>0){
+    const nt=nextTier(scale,pct);
+    if(nt){
+      const [th,nr]=nt;
+      const need=plan*th-fact;
+      const gain=(fact+need)*nr-bonus;
+      card.className='next';
+      card.innerHTML=`<div class="next-ey">До следующего уровня</div>
+        <div class="next-main">Ещё <b>${fmt(need)}</b> — порог ${Math.round(th*100)}%. Ставка вырастет с ${(r*100).toFixed(2).replace('.',',')}% до ${(nr*100).toFixed(2).replace('.',',')}%.</div>
+        <div class="next-gain">+ ${fmt(gain)} к бонусу</div>
+        <div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct/th*100)}%"></div></div>
+        <div class="bar-marks"><span>${(pct*100).toFixed(1)}% сейчас</span><span>${Math.round(th*100)}%</span></div>`;
+    } else {
+      card.className='next max';
+      card.innerHTML=`<div class="next-ey">Максимальная ставка</div>
+        <div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%. Каждая продажа по максимуму.</div>`;
+    }
+    card.classList.remove('hidden');
+  } else card.classList.add('hidden');
+}
+
+// ── ВОССТАНОВЛЕНИЕ СЕССИИ ─────────────────────────────────────────────────────
+(function(){
+  const saved = sessionStorage.getItem('crn_dir');
+  if(saved){ try{ showCalc(JSON.parse(saved)); }catch(e){ sessionStorage.removeItem('crn_dir'); } }
+})();
+</script>
+</body>
+</html>
