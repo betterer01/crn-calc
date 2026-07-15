@@ -261,6 +261,28 @@ function changeSeg(seg){
   const saf=document.getElementById('st-atv_fact'); if(saf) saf.placeholder=ATV_PH[seg]||'200 000';
   ['dir','ad','st'].forEach(r=>calc(r));
 }
+function renderScaleTable(containerId, scale, currentPct){
+  var el=document.getElementById(containerId);
+  if(!el){
+    var parent=document.getElementById(containerId.replace('-scale','')+ '-next');
+    if(!parent) return;
+    el=document.createElement('div'); el.id=containerId;
+    parent.parentNode.insertBefore(el, parent.nextSibling);
+  }
+  var labels = {0:'<90%', 0.9:'90%', 0.95:'95%', 1.0:'100%', 1.1:'110%', 1.2:'120%'};
+  var html='<div class=scale-hdr>Шкала бонусных %</div><table class=scale-tbl><thead><tr><th>Порог</th><th>Ставка</th></tr></thead><tbody>';
+  for(var i=0;i<scale.length;i++){
+    var th=scale[i][0], rate=scale[i][1];
+    var nextTh = i<scale.length-1 ? scale[i+1][0] : 999;
+    var isActive = currentPct>=th-1e-9 && currentPct<nextTh-1e-9;
+    if(i===scale.length-1 && currentPct>=th-1e-9) isActive=true;
+    var cls=isActive?' class=active-tier':'';
+    var thLabel=labels[th]||(Math.round(th*100)+'%');
+    html+='<tr'+cls+'><td>'+(th===0?'до 90%':'≥'+thLabel)+'</td><td>'+(rate*100).toFixed(2).replace('.',',')+'%</td></tr>';
+  }
+  html+='</tbody></table>';
+  el.innerHTML=html;
+}
 function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
 function nextTier(scale,pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
 
@@ -317,6 +339,7 @@ function calc(role){
       } else {card.className='next max';card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%.</div>`;}
       card.classList.remove('hidden');
     } else card.classList.add('hidden');
+    renderScaleTable('reg-scale', scale['reg']||scale, pct);
     return;
   }
   const pct=plan>0?fact/plan:0;
@@ -350,6 +373,7 @@ function calc(role){
     }
     card.classList.remove('hidden');
   } else card.classList.add('hidden');
+  renderScaleTable(role+'-scale', scale, pct);
 }
 
 // восстановление сессии
