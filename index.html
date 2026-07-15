@@ -267,8 +267,13 @@ function switchRole(role, tab){
   document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.role-panel').forEach(p=>p.classList.remove('active'));
   if(tab) tab.classList.add('active');
-  else document.querySelectorAll('.role-tab')[['dir','ad','st'].indexOf(role)].classList.add('active');
+  else document.querySelectorAll('.role-tab')[['reg','dir','ad','st'].indexOf(role)].classList.add('active');
   document.getElementById('panel-'+role).classList.add('active');
+  // показываем шкалу сразу при переключении даже без данных
+  if(DIR){
+    const sc = SCALES[DIR.seg][role] || (role==='reg' ? SCALES[DIR.seg]['reg'] : null);
+    if(sc) renderScale(role, sc, 0);
+  }
   calc(role);
 }
 
@@ -296,7 +301,7 @@ function renderScale(role, scale, pct){
   const col1 = role==='dir'||role==='reg' ? 'Выполнение плана ТО' : 'Выполнение личного плана';
   if(title) title.textContent = role==='reg' ? 'Шкала % от ТО сети' : role==='dir' ? 'Шкала % от ТО магазина' : 'Шкала % от личных продаж';
   head.innerHTML = `<tr><th>${col1}</th><th>Ставка</th></tr>`;
-  const sc = scale['reg'] || scale;
+  const sc = Array.isArray(scale) ? scale : (scale['reg'] || scale[role] || Object.values(scale)[0]);
   body.innerHTML = sc.map((item,i)=>{
     const [th,v]=item;
     let lbl;
@@ -397,7 +402,7 @@ function calc(role){
     }
     card.classList.remove('hidden');
   } else card.classList.add('hidden');
-  renderScale(role, SCALES[DIR.seg], pct);
+  renderScale(role, scale, pct);
 }
 
 // восстановление сессии
