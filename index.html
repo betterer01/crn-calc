@@ -590,12 +590,13 @@ ${empSummary}
     const resp = await fetch('/api/ai', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({prompt})
+      body: JSON.stringify({prompt, store: DIR.store, brand: DIR.brand, report_date: lastDate})
     });
     const data = await resp.json();
     const text = data.text || '[]';
     const clean = text.replace(/```json|```/g,'').trim();
     const items = JSON.parse(clean);
+    if(data.cached) document.getElementById('ai-content').insertAdjacentHTML('afterbegin','<div style="font-size:10px;color:var(--mut);margin-bottom:8px">данные за '+lastDate+'</div>');
     if(!items.length){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Все сотрудники в норме — отличная работа команды!</div>'; return; }
     document.getElementById('ai-content').innerHTML = items.map(it=>`
       <div class="focus-item">
