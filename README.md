@@ -1,2 +1,2 @@
-# crn-calc
-CRN Group — калькулятор бонусов
+# CRN Calculator
+Last deploy: 1784174577
