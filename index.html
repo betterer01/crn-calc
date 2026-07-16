@@ -349,54 +349,152 @@ async function supaFetch(table, params=''){
 }
 
 async function loadCabinet(){
+  const isReg = DIR.seg==='regional_corneli'||DIR.seg==='regional_crinzo';
+  if(isReg){ await loadRegionalCabinet(); return; }
+  await loadDirectorCabinet();
+}
+
+async function loadDirectorCabinet(){
   const store = DIR.store;
   const brand = DIR.brand;
-
-  // Последняя дата
   const dates = await supaFetch('daily_employees','?select=report_date&order=report_date.desc&limit=1');
   const lastDate = dates[0]?.report_date;
   if(!lastDate){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Нет данных</div>'; return; }
-
-  // Данные сотрудников
   const emps = await supaFetch('daily_employees',
     `?report_date=eq.${lastDate}&store=eq.${encodeURIComponent(store)}&brand=eq.${encodeURIComponent(brand)}&order=plan_pct.desc`);
-
-  // Недельные метрики магазина
   const weekly = await supaFetch('store_weekly_metrics',
     `?brand=eq.${encodeURIComponent(brand)}&store=ilike.*${encodeURIComponent(store.split(' ')[0])}*&order=report_date.desc&limit=1`);
   const w = weekly[0] || {};
-
-  // KPI магазина
   const totalFact = emps.reduce((s,e)=>s+(parseFloat(e.fact)||0),0);
   const totalPlan = emps.reduce((s,e)=>s+(parseFloat(e.plan)||0),0);
   const pct = totalPlan>0 ? Math.round(totalFact/totalPlan*100) : 0;
   const avgAtv = emps.length>0 ? Math.round(emps.reduce((s,e)=>s+(parseFloat(e.atv_fact)||0),0)/emps.length) : 0;
   const avgUpt = emps.length>0 ? (emps.reduce((s,e)=>s+(parseFloat(e.upt_fact)||0),0)/emps.length).toFixed(2) : 0;
   const okCount = emps.filter(e=>e.signal==='ok').length;
-
   const kpiColor = pct>=100?'ok':pct>=85?'warn':'bad';
   document.getElementById('cab-kpi').innerHTML=`
     <div class="kpi"><div class="kpi-label">Команда на плане</div><div class="kpi-val ${kpiColor}">${pct}%</div></div>
     <div class="kpi"><div class="kpi-label">Средний чек</div><div class="kpi-val ${avgAtv>0?'ok':'bad'}">${(avgAtv/1000).toFixed(0)}к</div></div>
     <div class="kpi"><div class="kpi-label">UPT</div><div class="kpi-val ok">${avgUpt}</div></div>
     <div class="kpi"><div class="kpi-label">В зелёной зоне</div><div class="kpi-val ${okCount>emps.length/2?'ok':'warn'}">${okCount} / ${emps.length}</div></div>`;
-
-  // Прогресс месяца из weekly
   const monthFact = (parseFloat(w.sales_w1)||0)+(parseFloat(w.sales_w2)||0)+(parseFloat(w.sales_w3)||0);
   const monthPlan = parseFloat(w.sales_plan)||0;
   const monthPct = monthPlan>0 ? Math.round(monthFact/monthPlan*100) : 0;
   document.getElementById('cab-pct-label').textContent = monthPct+'%';
   document.getElementById('cab-bar').style.width = Math.min(100,monthPct)+'%';
   document.getElementById('cab-bar').style.background = monthPct>=100?'var(--good)':monthPct>=85?'var(--accent)':'var(--warn)';
-  document.getElementById('cab-prog-sub').textContent = monthFact>0
-    ? `Факт ${fmtM(monthFact)} из ${fmtM(monthPlan)} плана`
-    : 'Нет данных по месяцу';
-
-  // Команда по ролям
+  document.getElementById('cab-prog-sub').textContent = monthFact>0 ? `Факт ${fmtM(monthFact)} из ${fmtM(monthPlan)} плана` : 'Нет данных по месяцу';
   await loadTeam(emps);
-
-  // ИИ
   await loadAI(emps, pct, avgAtv, avgUpt, lastDate);
+}
+
+async function loadRegionalCabinet(){
+  const brand = DIR.brand;
+  const dates = await supaFetch('daily_employees','?select=report_date&order=report_date.desc&limit=1');
+  const lastDate = dates[0]?.report_date;
+  if(!lastDate){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Нет данных</div>'; return; }
+
+  // Все сотрудники бренда
+  const allEmps = await supaFetch('daily_employees',
+    `?report_date=eq.${lastDate}&brand=eq.${encodeURIComponent(brand)}&order=store,plan_pct.desc`);
+
+  // Группируем по магазинам
+  const storeMap = {};
+  for(const e of allEmps){
+    if(!storeMap[e.store]) storeMap[e.store]={store:e.store,emps:[]};
+    storeMap[e.store].emps.push(e);
+  }
+  const stores = Object.values(storeMap).map(s=>{
+    const fact=s.emps.reduce((a,e)=>a+(parseFloat(e.fact)||0),0);
+    const plan=s.emps.reduce((a,e)=>a+(parseFloat(e.plan)||0),0);
+    const pct=plan>0?Math.round(fact/plan*100):0;
+    const avgAtv=s.emps.length?Math.round(s.emps.reduce((a,e)=>a+(parseFloat(e.atv_fact)||0),0)/s.emps.length):0;
+    return {...s,fact,plan,pct,avgAtv};
+  }).sort((a,b)=>a.pct-b.pct);
+
+  // KPI сети
+  const netFact=stores.reduce((a,s)=>a+s.fact,0);
+  const netPlan=stores.reduce((a,s)=>a+s.plan,0);
+  const netPct=netPlan>0?Math.round(netFact/netPlan*100):0;
+  const okStores=stores.filter(s=>s.pct>=85).length;
+  const netColor=netPct>=100?'ok':netPct>=85?'warn':'bad';
+  document.getElementById('cab-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Сеть ${brand}</div><div class="kpi-val ${netColor}">${netPct}%</div></div>
+    <div class="kpi"><div class="kpi-label">Магазинов в норме</div><div class="kpi-val ${okStores>=stores.length*0.7?'ok':'warn'}">${okStores} / ${stores.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Факт сети</div><div class="kpi-val ok">${fmtM(netFact)}</div></div>
+    <div class="kpi"><div class="kpi-label">Аутсайдеры</div><div class="kpi-val bad">${stores.filter(s=>s.pct<70).length} магаз.</div></div>`;
+
+  // Прогресс сети
+  document.getElementById('cab-pct-label').textContent=netPct+'%';
+  document.getElementById('cab-bar').style.width=Math.min(100,netPct)+'%';
+  document.getElementById('cab-bar').style.background=netPct>=100?'var(--good)':netPct>=85?'var(--accent)':'var(--warn)';
+  document.getElementById('cab-prog-sub').textContent=`Факт ${fmtM(netFact)} из ${fmtM(netPlan)} · ${stores.length} магазинов`;
+
+  // ИИ по аутсайдерам магазинам
+  await loadRegionalAI(stores, lastDate, brand);
+
+  // Все магазины с сотрудниками
+  let html='<div class="sec-head">Все магазины сети '+brand+'</div>';
+  for(const s of stores){
+    const sc=s.pct>=85?'ok':s.pct>=70?'warn':'bad';
+    html+=`<div style="background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:12px;overflow:hidden">
+      <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)">
+        <div>
+          <div style="font-size:14px;font-weight:600">${s.store}</div>
+          <div style="font-size:11px;color:var(--mut)">${s.emps.length} сотрудников · ATV ${(s.avgAtv/1000).toFixed(0)}к</div>
+        </div>
+        <div style="font-size:20px;font-weight:700;color:var(--${sc})">${s.pct}%</div>
+      </div>
+      <div style="padding:8px 14px">
+        ${s.emps.slice(0,4).map(e=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12.5px;border-bottom:0.5px solid var(--line)">
+            <span style="color:var(--ink)">${e.name.split(' ').slice(0,2).join(' ')}</span>
+            <span style="font-weight:600;color:var(--${e.signal==='ok'?'good':e.signal==='warning'?'warn':'bad'})">${Math.round(e.plan_pct||0)}%</span>
+          </div>`).join('')}
+        ${s.emps.length>4?`<div style="font-size:11px;color:var(--mut);padding-top:5px">+ ещё ${s.emps.length-4} сотрудников</div>`:''}
+      </div>
+    </div>`;
+  }
+  document.getElementById('cab-team').innerHTML=html;
+}
+
+async function loadRegionalAI(stores, lastDate, brand){
+  const bottom3 = stores.slice(0,3);
+  const storeSummary = bottom3.map(s=>
+    `${s.store}: план ${s.pct}%, факт ${fmtM(s.fact)}, сотрудников ${s.emps.length}, ` +
+    `из них в красной зоне ${s.emps.filter(e=>e.signal==='critical').length}`
+  ).join('\n');
+  const allSummary = stores.map(s=>`${s.store}: ${s.pct}%`).join(', ');
+
+  const prompt = `Ты HR-аналитик CRN Group (fashion retail, Казахстан).
+Данные сети ${brand} за ${lastDate}:
+Все магазины (% плана): ${allSummary}
+
+3 отстающих магазина:
+${storeSummary}
+
+Для каждого из 3 отстающих магазинов дай конкретную рекомендацию региональному директору — одно действие.
+Формат — строго JSON массив, без markdown:
+[{"name":"название магазина","tag":"critical|warning","action":"конкретное действие одной фразой"}]
+Только JSON, ничего лишнего.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await resp.json();
+    const text=data.content?.find(c=>c.type==='text')?.text||'[]';
+    const items=JSON.parse(text.replace(/```json|```/g,'').trim());
+    document.getElementById('ai-content').innerHTML=items.map(it=>`
+      <div class="focus-item">
+        <div class="focus-name"><span class="focus-tag tag-${it.tag}">${it.tag==='critical'?'🔴 критично':'🟡 внимание'}</span>${it.name}</div>
+        <div class="focus-action">${it.action}</div>
+      </div>`).join('');
+  }catch(e){
+    document.getElementById('ai-content').innerHTML='<div class="ai-loading">Не удалось получить рекомендации</div>';
+  }
 }
 
 async function loadTeam(emps){
