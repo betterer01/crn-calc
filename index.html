@@ -498,13 +498,13 @@ ${storeSummary}
 Только JSON.`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,messages:[{role:'user',content:prompt}]})
+    const resp = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt})
     });
-    const data=await resp.json();
-    const text=data.content?.find(c=>c.type==='text')?.text||'[]';
+    const data = await resp.json();
+    const text = data.text || '[]';
     const items=JSON.parse(text.replace(/```json|```/g,'').trim());
     document.getElementById('ai-content').innerHTML=items.map(it=>`
       <div class="focus-item">
@@ -587,17 +587,13 @@ ${empSummary}
 Только JSON.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:500,
-        messages:[{role:'user',content:prompt}]
-      })
+    const resp = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt})
     });
     const data = await resp.json();
-    const text = data.content?.find(c=>c.type==='text')?.text||'[]';
+    const text = data.text || '[]';
     const clean = text.replace(/```json|```/g,'').trim();
     const items = JSON.parse(clean);
     if(!items.length){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Все сотрудники в норме — отличная работа команды!</div>'; return; }
