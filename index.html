@@ -3,51 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRN · Калькулятор бонусов</title>
+<title>CRN · Личный кабинет директора</title>
 <style>
-:root{--ink:#17151a;--paper:#f6f4ef;--card:#fff;--line:#e3ded4;--mut:#8a8478;--accent:#8a6d3b;--accent-ink:#6f5527;--good:#2e7d4f;--red:#b03030}
+:root{--ink:#17151a;--paper:#f6f4ef;--card:#fff;--line:#e3ded4;--mut:#8a8478;--accent:#8a6d3b;--accent-ink:#6f5527;--good:#2e7d4f;--warn:#b3541e;--bad:#b03030;--bg-good:#eaf5ee;--bg-warn:#fdf3ec;--bg-bad:#fbeaea;--bg-blue:#e8f0fb;--blue:#2c5fa8;--radius:8px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Helvetica Neue',Arial,system-ui,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
-.wrap{max-width:440px;margin:0 auto;padding:0 16px 60px}
-header{padding:26px 0 14px;border-bottom:1px solid var(--ink);margin-bottom:22px}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+.wrap{max-width:460px;margin:0 auto;padding:0 16px 60px}
+header{padding:26px 0 14px;border-bottom:1px solid var(--ink);margin-bottom:20px}
 .hrow{display:flex;justify-content:space-between;align-items:baseline}
 .logo{font-size:12px;letter-spacing:.38em;font-weight:700}
 .ver{font-size:9px;color:var(--mut)}
-h1{font-size:23px;font-weight:300;margin-top:9px;line-height:1.2}
+h1{font-size:22px;font-weight:300;margin-top:8px}
 h1 b{font-weight:700}
 
-/* ЛОГИН */
+/* AUTH */
 .field{margin-bottom:13px}
 label{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
-input[type=tel],input[type=password],input[type=number]{width:100%;padding:13px 14px;font-size:17px;font-family:inherit;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--ink);appearance:none;-webkit-appearance:none}
+input[type=tel],input[type=password],input[type=number]{width:100%;padding:13px 14px;font-size:17px;font-family:inherit;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--ink);appearance:none}
 input:focus{outline:2px solid var(--accent);outline-offset:-1px}
-.btn{width:100%;padding:14px;background:var(--ink);color:var(--paper);font-size:15px;font-family:inherit;border:none;cursor:pointer;letter-spacing:.04em;margin-top:6px}
+.btn{width:100%;padding:14px;background:var(--ink);color:var(--paper);font-size:15px;font-family:inherit;border:none;cursor:pointer;letter-spacing:.04em;margin-top:6px;border-radius:0}
 .btn:active{opacity:.85}
-.error{color:var(--red);font-size:13px;margin-top:10px;display:none}
+.btn-outline{background:var(--card);color:var(--ink);border:1px solid var(--line);margin-top:8px}
+.btn-cabinet{background:var(--accent);color:var(--paper);width:100%;padding:14px;font-size:15px;font-family:inherit;border:none;cursor:pointer;letter-spacing:.04em;margin-bottom:10px;border-radius:0}
+.err{color:var(--bad);font-size:13px;margin-top:10px;display:none}
 .hint{font-size:11.5px;color:var(--mut);margin-top:12px;line-height:1.6}
 
-/* ПОСЛЕ ВХОДА */
-#main{display:none}
-.store-bar{background:var(--card);border:1px solid var(--line);padding:12px 15px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
-.store-bar .info strong{font-size:15px}
-.store-bar .info span{font-size:11.5px;color:var(--mut);display:block;margin-top:2px}
-.logout{font-size:11px;color:var(--mut);cursor:pointer;text-decoration:underline;white-space:nowrap;margin-left:12px}
+/* STORE BAR */
+.store-bar{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+.store-bar strong{font-size:15px;font-weight:600;display:block}
+.store-bar span{font-size:12px;color:var(--mut)}
+.logout{font-size:11px;color:var(--mut);cursor:pointer;text-decoration:underline;margin-left:12px;white-space:nowrap}
 
-/* ВКЛАДКИ РОЛЕЙ */
-.role-tabs{display:flex;border:1px solid var(--line);background:var(--card);margin-bottom:20px}
-.role-tab{flex:1;padding:11px 6px;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);cursor:pointer;border-right:1px solid var(--line);transition:background .15s}
+/* TABS */
+.tabs{display:flex;border:1px solid var(--line);background:var(--card);margin-bottom:20px}
+.tab{flex:1;padding:12px 6px;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);cursor:pointer;border-right:1px solid var(--line);transition:background .15s}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--ink);color:var(--paper)}
+.panel{display:none}.panel.active{display:block}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.kpi{background:var(--card);border-radius:var(--radius);padding:12px;border:1px solid var(--line)}
+.kpi-label{font-size:11px;color:var(--mut);margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:700}
+.ok{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+
+/* PROGRESS BAR */
+.prog-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:6px}
+.prog-label b{color:var(--ink);font-weight:600}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.bar-fill{height:100%;border-radius:5px;background:var(--accent);transition:width .5s}
+.prog-sub{font-size:11px;color:var(--mut);text-align:center}
+
+/* AI BLOCK */
+.ai-block{background:var(--bg-blue);border:1px solid #b8cef0;border-radius:var(--radius);padding:14px;margin-bottom:16px}
+.ai-lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-loading{font-size:13px;color:var(--blue);opacity:.7}
+.focus-item{padding:10px 0;border-bottom:1px solid #d0dff5;font-size:13px;line-height:1.55}
+.focus-item:last-child{border-bottom:none;padding-bottom:0}
+.focus-name{font-weight:600;margin-bottom:3px}
+.focus-action{color:var(--ink)}
+.focus-tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;margin-right:5px;font-weight:600}
+.tag-bad{background:var(--bg-bad);color:var(--bad)}
+.tag-warn{background:var(--bg-warn);color:var(--warn)}
+
+/* SECTION */
+.sec-head{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:16px 0 8px;font-weight:600}
+.emp{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.av-ok{background:var(--bg-good);color:var(--good)}
+.av-warn{background:var(--bg-warn);color:var(--warn)}
+.av-bad{background:var(--bg-bad);color:var(--bad)}
+.emp-name{font-size:13px;font-weight:600}
+.emp-meta{font-size:11px;color:var(--mut);margin-top:2px}
+.emp-pct{margin-left:auto;font-size:18px;font-weight:700;flex-shrink:0}
+
+/* CALC */
+.role-tabs{display:flex;border:1px solid var(--line);background:var(--card);margin-bottom:16px}
+.role-tab{flex:1;padding:11px 6px;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);cursor:pointer;border-right:1px solid var(--line)}
 .role-tab:last-child{border-right:none}
 .role-tab.active{background:var(--ink);color:var(--paper)}
 .role-panel{display:none}.role-panel.active{display:block}
-
-/* ПОЛЯ */
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.toggles{display:flex;flex-direction:column;gap:7px}
+.toggles{display:flex;flex-direction:column;gap:7px;margin-top:6px}
 .tgl{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);padding:11px 13px;cursor:pointer;font-size:13.5px}
 .tgl input{width:19px;height:19px;accent-color:var(--accent);flex-shrink:0}
 .tgl small{color:var(--mut);display:block;font-size:11px;margin-top:2px}
-
-/* РЕЗУЛЬТАТ */
 .total-card{background:var(--ink);color:var(--paper);padding:20px 16px;margin-top:6px}
 .total-label{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.65}
 .total-num{font-size:36px;font-weight:300;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -59,26 +100,19 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .bd-row .amt{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .bd-row .amt.zero{color:var(--mut);font-weight:400}
 .bd-row small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
-.next{margin-top:18px;border:2px solid var(--accent);background:var(--card);padding:14px 16px}
+.next{margin-top:16px;border:2px solid var(--accent);background:var(--card);padding:14px 16px}
 .next-ey{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:700}
 .next-main{font-size:16px;line-height:1.45;margin-top:8px}
 .next-main b{border-bottom:2px solid var(--accent)}
 .next-gain{margin-top:7px;font-size:13.5px;color:var(--good);font-weight:600}
-.bar{height:6px;background:var(--line);margin-top:11px}
-.bar-fill{height:100%;background:var(--accent);transition:width .4s}
-.bar-marks{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:4px;font-variant-numeric:tabular-nums}
+.barx{height:6px;background:var(--line);margin-top:11px}
+.barx-fill{height:100%;background:var(--accent);transition:width .4s}
+.bar-marks{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:4px}
 .next.max{border-color:var(--good)}.next.max .next-ey{color:var(--good)}
 .hidden{display:none}
-.scale-wrap{margin-top:18px}
-.scale-title{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;font-weight:700}
-.scale-t{width:100%;border-collapse:collapse;background:var(--card);font-size:13px}
-.scale-t th{background:#eae6dc;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:8px 6px;border:1px solid var(--line);font-weight:700}
-.scale-t td{padding:9px 6px;border:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
-.scale-t tr.active-row td{background:#fff8e8;font-weight:700}
-.scale-t tr.active-row td:first-child::before{content:"► ";color:var(--accent)}
-.scale-t tr.active-row td:last-child{color:var(--accent-ink);font-size:15px}
-.scale-t tr.active-row td:last-child::after{content:" ◄";color:var(--accent);font-size:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .disclaimer{margin-top:18px;font-size:10.5px;color:var(--mut);line-height:1.6}
+.seg-sel{width:100%;padding:12px 13px;font-size:15px;font-family:inherit;border:1px solid var(--line);background:var(--card);border-radius:0;appearance:none;margin-bottom:14px}
 @media(max-width:380px){.total-num{font-size:30px}.row2{grid-template-columns:1fr}}
 </style>
 </head>
@@ -94,67 +128,63 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
   <div class="field"><label>Номер телефона</label><input type="tel" id="phone" placeholder="77001234567" inputmode="numeric"></div>
   <div class="field"><label>Пароль</label><input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
   <button class="btn" onclick="doLogin()">Войти</button>
-  <div class="error" id="err">Неверный телефон или пароль</div>
+  <div class="err" id="err">Неверный телефон или пароль</div>
   <div class="hint">Введи номер без пробелов и знака +. По вопросам — обратись к HR.</div>
 </div>
 
 <!-- ГЛАВНЫЙ ЭКРАН -->
-<div id="main">
+<div id="main" style="display:none">
   <div class="store-bar">
-    <div class="info"><strong id="bar-store"></strong><span id="bar-sub"></span></div>
+    <div><strong id="bar-store"></strong><span id="bar-sub"></span></div>
     <span class="logout" onclick="doLogout()">Выйти</span>
   </div>
 
-  <div id="seg-selector" class="hidden" style="margin-bottom:16px">
-  <div style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:7px">Сегмент</div>
-  <select id="seg-select" onchange="changeSeg(this.value)" style="width:100%;padding:12px 13px;font-size:15px;font-family:inherit;border:1px solid var(--line);background:var(--card);border-radius:0;appearance:none">
-    <option value="corneli">CORNELI</option>
-    <option value="corneli_outlet">CORNELI OUTLET</option>
-    <option value="crinzo">CRINZO</option>
-    <option value="crinzo_outlet">CRINZO OUTLET</option>
-  </select>
-</div>
-<div class="role-tabs" id="role-tabs">
+  <!-- КНОПКА ЛИЧНОГО КАБИНЕТА -->
+  <button class="btn-cabinet" onclick="showCabinet()">⬛ Личный кабинет</button>
+
+  <!-- ВКЛАДКИ КАЛЬКУЛЯТОРА -->
+  <div class="role-tabs" id="role-tabs">
     <div class="role-tab hidden" id="tab-reg" onclick="switchRole('reg',this)">Мой KPI</div>
     <div class="role-tab active" onclick="switchRole('dir',this)">Директор</div>
     <div class="role-tab" onclick="switchRole('ad',this)">Администратор</div>
     <div class="role-tab" onclick="switchRole('st',this)">Стилист</div>
   </div>
 
-  <!-- РЕГИОНАЛЬНЫЙ -->
+  <div id="seg-wrap" class="hidden" style="margin-bottom:14px">
+    <label>Сегмент</label>
+    <select class="seg-sel" id="seg-select" onchange="changeSeg(this.value)">
+      <option value="corneli">CORNELI</option>
+      <option value="corneli_outlet">CORNELI OUTLET</option>
+      <option value="crinzo">CRINZO</option>
+      <option value="crinzo_outlet">CRINZO OUTLET</option>
+    </select>
+  </div>
+
+  <!-- ПАНЕЛЬ РЕГИОНАЛА -->
   <div class="role-panel" id="panel-reg">
     <div class="field"><label>План ТО сети за месяц, тг</label><input type="number" id="reg-plan" inputmode="numeric" placeholder="420 000 000" oninput="calc('reg')"></div>
     <div class="field"><label>Факт ТО сети за месяц, тг</label><input type="number" id="reg-to" inputmode="numeric" placeholder="420 000 000" oninput="calc('reg')"></div>
     <div class="field"><label>Спецзадача Коммерческого директора — 100 000 тг</label>
-      <div class="toggles">
-        <label class="tgl"><input type="checkbox" id="reg-spec" onchange="calc('reg')">
-          <span>Задача выполнена<small>ежемесячно · оценка Марины</small></span></label>
-      </div>
+      <div class="toggles"><label class="tgl"><input type="checkbox" id="reg-spec" onchange="calc('reg')"><span>Задача выполнена<small>ежемесячно · оценка Марины</small></span></label></div>
     </div>
     <div class="field"><label>Core KPI — по 150 000 тг · квартально</label>
       <div class="toggles">
-        <label class="tgl"><input type="checkbox" id="reg-hr" onchange="calc('reg')">
-          <span>HR Core KPI<small>≥70% директоров выполнили HR-показатель за квартал</small></span></label>
-        <label class="tgl"><input type="checkbox" id="reg-fin" onchange="calc('reg')">
-          <span>FIN Core KPI<small>≥70% директоров выполнили FIN-показатель за квартал</small></span></label>
-        <label class="tgl"><input type="checkbox" id="reg-stock" onchange="calc('reg')">
-          <span>Stock Core KPI<small>≥70% директоров выполнили Stock-показатель за квартал</small></span></label>
+        <label class="tgl"><input type="checkbox" id="reg-hr" onchange="calc('reg')"><span>HR Core KPI<small>≥70% директоров выполнили HR-показатель за квартал</small></span></label>
+        <label class="tgl"><input type="checkbox" id="reg-fin" onchange="calc('reg')"><span>FIN Core KPI<small>≥70% директоров выполнили FIN-показатель за квартал</small></span></label>
+        <label class="tgl"><input type="checkbox" id="reg-stock" onchange="calc('reg')"><span>Stock Core KPI<small>≥70% директоров выполнили Stock-показатель за квартал</small></span></label>
       </div>
-      <div style="font-size:11px;color:var(--mut);margin-top:8px;line-height:1.5">Квартальный KPI включайте только в расчёт итогового квартального дохода.</div>
     </div>
     <div class="total-card"><div class="total-label">Прогноз дохода</div><div class="total-num" id="reg-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="reg-bd"></div>
     <div class="next hidden" id="reg-next"></div>
-    <div class="scale-wrap" id="reg-scale-wrap" style="display:none">
-      <div class="scale-title" id="reg-scale-title">Шкала % от ТО сети</div>
-      <table class="scale-t"><thead id="reg-scale-head"></thead><tbody id="reg-scale-body"></tbody></table>
-    </div>
   </div>
 
-  <!-- ДИРЕКТОР -->
+  <!-- ПАНЕЛЬ ДИРЕКТОРА -->
   <div class="role-panel active" id="panel-dir">
-    <div class="field"><label>План ТО магазина, тг</label><input type="number" id="dir-s_plan" inputmode="numeric" oninput="calc('dir')"></div>
-    <div class="field"><label>Факт / прогноз ТО, тг</label><input type="number" id="dir-s_fact" inputmode="numeric" oninput="calc('dir')"></div>
+    <div class="row2">
+      <div class="field"><label>План ТО магазина, тг</label><input type="number" id="dir-s_plan" inputmode="numeric" oninput="calc('dir')"></div>
+      <div class="field"><label>Факт / прогноз ТО, тг</label><input type="number" id="dir-s_fact" inputmode="numeric" oninput="calc('dir')"></div>
+    </div>
     <div class="field"><label>Core KPI — по 40 000 тг каждый</label>
       <div class="toggles">
         <label class="tgl"><input type="checkbox" id="dir-hr" checked onchange="calc('dir')"><span>HR-бонус<small>0 увольнений, план в допустимых нормах</small></span></label>
@@ -165,16 +195,12 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="dir-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="dir-bd"></div>
     <div class="next hidden" id="dir-next"></div>
-  <div class="scale-wrap" id="dir-scale-wrap" style="display:none">
-    <div class="scale-title" id="dir-scale-title">Шкала</div>
-    <table class="scale-t"><thead id="dir-scale-head"></thead><tbody id="dir-scale-body"></tbody></table>
-  </div>
   </div>
 
-  <!-- АДМИНИСТРАТОР -->
+  <!-- ПАНЕЛЬ АДМИНИСТРАТОРА -->
   <div class="role-panel" id="panel-ad">
     <div class="row2">
-      <div class="field"><label>План продаж, тг</label><input type="number" id="ad-p_plan" inputmode="numeric" oninput="calc('ad')" id="ad-p_plan"></div>
+      <div class="field"><label>План продаж, тг</label><input type="number" id="ad-p_plan" inputmode="numeric" oninput="calc('ad')"></div>
       <div class="field"><label>Факт / прогноз, тг</label><input type="number" id="ad-p_fact" inputmode="numeric" oninput="calc('ad')"></div>
     </div>
     <div class="field"><label>Core KPI — по 30 000 тг каждый</label>
@@ -187,14 +213,11 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="ad-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="ad-bd"></div>
     <div class="next hidden" id="ad-next"></div>
-  <div class="scale-wrap" id="ad-scale-wrap" style="display:none">
-    <div class="scale-title" id="ad-scale-title">Шкала</div>
-    <table class="scale-t"><thead id="ad-scale-head"></thead><tbody id="ad-scale-body"></tbody></table>
-  </div>
   </div>
 
-  <!-- СТИЛИСТ -->
+  <!-- ПАНЕЛЬ СТИЛИСТА -->
   <div class="role-panel" id="panel-st">
+    <div id="st-hours-wrap" class="field" style="display:none"><label>Часы (850 тг/час — Шымкент)</label><input type="number" id="st-hours" inputmode="numeric" oninput="calc('st')"></div>
     <div class="row2">
       <div class="field"><label>План ср. чек, тг</label><input type="number" id="st-atv_plan" inputmode="numeric" oninput="calc('st')"></div>
       <div class="field"><label>Факт ср. чек, тг</label><input type="number" id="st-atv_fact" inputmode="numeric" oninput="calc('st')"></div>
@@ -203,38 +226,66 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
       <div class="field"><label>План продаж, тг</label><input type="number" id="st-p_plan" inputmode="numeric" oninput="calc('st')"></div>
       <div class="field"><label>Факт / прогноз, тг</label><input type="number" id="st-p_fact" inputmode="numeric" oninput="calc('st')"></div>
     </div>
-    <div id="st-hours-wrap" class="field" style="display:none"><label>Часы (850 тг/час — Шымкент)</label><input type="number" id="st-hours" inputmode="numeric" oninput="calc('st')"></div>
     <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="st-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="st-bd"></div>
     <div class="next hidden" id="st-next"></div>
-  <div class="scale-wrap" id="st-scale-wrap" style="display:none">
-    <div class="scale-title" id="st-scale-title">Шкала</div>
-    <table class="scale-t"><thead id="st-scale-head"></thead><tbody id="st-scale-body"></tbody></table>
-  </div>
   </div>
 
   <div class="disclaimer">Расчёт по системе оплаты труда CRN Group, приказ от 30.04.2026. Итоговое начисление — по данным 1С. При расхождении приоритет у расчётной ведомости.</div>
 </div>
+
+<!-- ЛИЧНЫЙ КАБИНЕТ -->
+<div id="cabinet" style="display:none">
+  <div class="store-bar">
+    <div><strong id="cab-store"></strong><span id="cab-date"></span></div>
+    <span class="logout" onclick="hideCabinet()">← Назад</span>
+  </div>
+
+  <!-- KPI МАГАЗИНА -->
+  <div class="kpi-grid" id="cab-kpi"></div>
+
+  <!-- ПРОГРЕСС МЕСЯЦА -->
+  <div class="prog-wrap">
+    <div class="prog-label"><span>Выполнение плана месяца</span><b id="cab-pct-label">—</b></div>
+    <div class="bar"><div class="bar-fill" id="cab-bar" style="width:0%"></div></div>
+    <div class="prog-sub" id="cab-prog-sub"></div>
+  </div>
+
+  <!-- ИИ ФОКУС -->
+  <div class="ai-block">
+    <div class="ai-lbl">★ ИИ · Фокус на сегодня</div>
+    <div id="ai-content"><div class="ai-loading">Анализирую данные команды...</div></div>
+  </div>
+
+  <!-- КОМАНДА -->
+  <div id="cab-team"></div>
 </div>
 
+</div><!-- /wrap -->
+
 <script>
-const DIRECTORS=[{"phone": "77082340740", "name": "Сейтбек А.", "store": "AKTAU", "city": "Актау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77751674260", "name": "Имамбекова Г.", "store": "AL-FARABI", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77027449155", "name": "Шайкулова М.", "store": "MEGA ALMA-ATA", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77077850635", "name": "Кожевникова У.", "store": "MEGA PARK", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77477646940", "name": "Калиханова З.", "store": "MEGA SILKWAY", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77075186643", "name": "Мукеева А.", "store": "OUTLET", "city": "Алматы", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77054123227", "name": "Амирханова А.", "store": "OUTLET", "city": "Астана", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77779101234", "name": "Кульбатырова И.", "store": "TURAN", "city": "Астана", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77022949998", "name": "Алимбекова А.", "store": "BAIZAAR", "city": "Атырау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77716598687", "name": "Козяев В.", "store": "GRAND PARK", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77777002001", "name": "Қуаныш Ұ.", "store": "КУНАЕВА", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77059702555", "name": "Романова З.", "store": "KARAGANDA", "city": "Қарағанды", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77476394503", "name": "Дилдабай А.", "store": "OUTLET", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"phone": "77087774289", "name": "Жазира", "store": "ZHELTOKSAN", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769907369", "name": "Әмірәлі А.", "store": "MEGA SILKWAY", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77054287861", "name": "Садуақас А.", "store": "МАНГІЛІК ЕЛ", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77009566306", "name": "Әбдіхан Д.", "store": "НУРСАТ", "city": "Шымкент", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769001111", "name": "Қосынбаев Ж.", "store": "KYZYLORDA", "city": "Қызылорда", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77028726776", "name": "Еркебулан", "store": "HRD", "city": "Алматы", "brand": "CORNELI", "seg": "admin_full"}, {"phone": "77789810418", "name": "Фариза", "store": "Региональный директор", "city": "Алматы", "brand": "CORNELI", "seg": "regional_corneli"}, {"phone": "77073245605", "name": "Алмат", "store": "Региональный директор", "city": "Алматы", "brand": "CRINZO", "seg": "regional_crinzo"}];
-const SCALES={"corneli": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "corneli_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo": {"dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "regional_corneli": {"reg": [[0, 0], [0.95, 0.001], [1.0, 0.0013], [1.05, 0.0014], [1.1, 0.0015]], "dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "regional_crinzo": {"reg": [[0, 0], [0.95, 0.0014], [1.0, 0.002], [1.05, 0.0022], [1.1, 0.0024]], "dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "admin_full": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}};
-const CORE={"dir": 40000, "ad": 30000, "st": 0};
-const TO_PH={"corneli": "60 000 000", "corneli_outlet": "35 000 000", "crinzo": "25 000 000", "crinzo_outlet": "20 000 000"};
-const SALES_PH={"corneli": "10 000 000", "corneli_outlet": "8 000 000", "crinzo": "5 000 000", "crinzo_outlet": "5 000 000"};
-const ATV_PH={"corneli": "200 000", "corneli_outlet": "180 000", "crinzo": "80 000", "crinzo_outlet": "80 000"};
-const APP_PASSWORD="CRN2026";
+const SUPABASE_URL = "https://cvyzxwcsxbkqzjoumgbe.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2eXp4d2NzeGJrcXpqb3VtZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDk5OTQsImV4cCI6MjA5NjkyNTk5NH0.f1a6xlPt6gfSiC7uMAhOxTGYEjm60bZNUhDd-wK7lf0";
+
+const DIRECTORS = [{"phone": "77082340740", "name": "Сейтбек А.", "store": "AKTAU", "city": "Актау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77751674260", "name": "Имамбекова Г.", "store": "AL-FARABI", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77027449155", "name": "Шайкулова М.", "store": "MEGA ALMA-ATA", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77077850635", "name": "Кожевникова У.", "store": "MEGA PARK", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77477646940", "name": "Калиханова З.", "store": "MEGA SILKWAY", "city": "Алматы", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77075186643", "name": "Мукеева А.", "store": "OUTLET", "city": "Алматы", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77054123227", "name": "Амирханова А.", "store": "OUTLET", "city": "Астана", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77779101234", "name": "Кульбатырова И.", "store": "TURAN", "city": "Астана", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77022949998", "name": "Алимбекова А.", "store": "BAIZAAR", "city": "Атырау", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77716598687", "name": "Козяев В.", "store": "GRAND PARK", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77777002001", "name": "Қуаныш Ұ.", "store": "КУНАЕВА", "city": "Шымкент", "brand": "CORNELI", "seg": "corneli"}, {"phone": "77059702555", "name": "Романова З.", "store": "KARAGANDA", "city": "Қарағанды", "brand": "CORNELI", "seg": "corneli_outlet"}, {"phone": "77476394503", "name": "Дилдабай А.", "store": "OUTLET", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo_outlet"}, {"phone": "77087774289", "name": "Жазира", "store": "ZHELTOKSAN", "city": "Алматы", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769907369", "name": "Әмірәлі А.", "store": "MEGA SILKWAY", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77054287861", "name": "Садуақас А.", "store": "МАНГІЛІК ЕЛ", "city": "Астана", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77009566306", "name": "Әбдіхан Д.", "store": "НУРСАТ", "city": "Шымкент", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77769001111", "name": "Қосынбаев Ж.", "store": "KYZYLORDA", "city": "Қызылорда", "brand": "CRINZO", "seg": "crinzo"}, {"phone": "77028726776", "name": "Еркебулан", "store": "HRD", "city": "Алматы", "brand": "CORNELI", "seg": "admin_full"}, {"phone": "77789810418", "name": "Фариза", "store": "Региональный директор", "city": "Алматы", "brand": "CORNELI", "seg": "regional_corneli"}, {"phone": "77073245605", "name": "Алмат", "store": "Региональный директор", "city": "Алматы", "brand": "CRINZO", "seg": "regional_crinzo"}];
+const SCALES = {"corneli": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "corneli_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo": {"dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "crinzo_outlet": {"dir": [[0, 0.005], [0.9, 0.01], [1.0, 0.0125], [1.1, 0.015], [1.2, 0.02]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "regional_corneli": {"reg": [[0, 0], [0.95, 0.001], [1.0, 0.0013], [1.05, 0.0014], [1.1, 0.0015]], "dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}, "regional_crinzo": {"reg": [[0, 0], [0.95, 0.0014], [1.0, 0.002], [1.05, 0.0022], [1.1, 0.0024]], "dir": [[0, 0.003], [0.9, 0.0065], [1.0, 0.008], [1.1, 0.0095], [1.2, 0.0105]], "ad": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]], "st": [[0, 0.01], [0.9, 0.028], [0.95, 0.033], [1.0, 0.038], [1.1, 0.04], [1.2, 0.042]]}, "admin_full": {"dir": [[0, 0.003], [0.9, 0.006], [1.0, 0.0075], [1.1, 0.009], [1.2, 0.01]], "ad": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]], "st": [[0, 0.01], [0.9, 0.025], [0.95, 0.029], [1.0, 0.035], [1.1, 0.037], [1.2, 0.039]]}};
+const CORE = {dir:40000,ad:30000,st:0};
+const TO_PH = {corneli:"60 000 000",corneli_outlet:"35 000 000",crinzo:"25 000 000",crinzo_outlet:"20 000 000"};
+const SALES_PH = {corneli:"10 000 000",corneli_outlet:"8 000 000",crinzo:"5 000 000",crinzo_outlet:"5 000 000"};
+const ATV_PH = {corneli:"200 000",corneli_outlet:"180 000",crinzo:"80 000",crinzo_outlet:"80 000"};
+const APP_PASSWORD = "CRN2026";
+
 const fmt = n => Math.round(n).toLocaleString('ru-RU') + ' тг';
-const num = id => { const el=document.getElementById(id); if(!el)return 0; const v=parseFloat((el.value||'').replace(/\s/g,'')); return isNaN(v)?0:v; };
+const fmtM = n => (n/1e6).toFixed(1) + ' млн';
+const num = id => { const el=document.getElementById(id); if(!el)return 0; const v=parseFloat((el.value||'').replace(/\\s/g,'')); return isNaN(v)?0:v; };
 const chk = id => { const el=document.getElementById(id); return el?el.checked:false; };
 let DIR = null;
 
+// AUTH
 function normalizePhone(p){ return p.replace(/[^0-9]/g,''); }
-
 function doLogin(){
   const phone = normalizePhone(document.getElementById('phone').value);
-  const pass  = document.getElementById('password').value.trim();
+  const pass = document.getElementById('password').value.trim();
   document.getElementById('err').style.display='none';
   if(pass !== APP_PASSWORD){ document.getElementById('err').style.display='block'; return; }
   const dir = DIRECTORS.find(d => normalizePhone(d.phone) === phone);
@@ -242,12 +293,11 @@ function doLogin(){
   sessionStorage.setItem('crn_dir', JSON.stringify(dir));
   showMain(dir);
 }
-
 function doLogout(){
-  sessionStorage.removeItem('crn_dir');
-  DIR=null;
+  sessionStorage.removeItem('crn_dir'); DIR=null;
   document.getElementById('login').style.display='block';
   document.getElementById('main').style.display='none';
+  document.getElementById('cabinet').style.display='none';
   document.getElementById('phone').value='';
   document.getElementById('password').value='';
 }
@@ -256,52 +306,14 @@ function showMain(dir){
   DIR=dir;
   document.getElementById('login').style.display='none';
   document.getElementById('main').style.display='block';
-  const segSel=document.getElementById('seg-selector');
-  if(segSel) segSel.classList.toggle('hidden', dir.seg!=='admin_full');
-  const tabReg=document.getElementById('tab-reg');
-  const isRegional = dir.seg==='regional_corneli' || dir.seg==='regional_crinzo';
-  if(tabReg) tabReg.classList.toggle('hidden', !isRegional);
+  document.getElementById('cabinet').style.display='none';
   document.getElementById('bar-store').textContent=dir.store;
   document.getElementById('bar-sub').textContent=dir.city+' · '+dir.brand;
-  // плейсхолдеры
   const seg=dir.seg;
-  const dp=document.getElementById('dir-s_plan'); if(dp) dp.placeholder=TO_PH[seg];
-  const df=document.getElementById('dir-s_fact'); if(df) df.placeholder=TO_PH[seg];
-  const ap=document.getElementById('ad-p_plan'); if(ap) ap.placeholder=SALES_PH[seg];
-  const af=document.getElementById('ad-p_fact'); if(af) af.placeholder=SALES_PH[seg];
-  const sp=document.getElementById('st-p_plan'); if(sp) sp.placeholder=SALES_PH[seg];
-  const sf=document.getElementById('st-p_fact'); if(sf) sf.placeholder=SALES_PH[seg];
-  const sa=document.getElementById('st-atv_plan'); if(sa) sa.placeholder=ATV_PH[seg];
-  const saf=document.getElementById('st-atv_fact'); if(saf) saf.placeholder=ATV_PH[seg];
-  // Шымкент — показываем поле часов
-  const hw=document.getElementById('st-hours-wrap');
-  if(hw) hw.style.display=dir.city==='Шымкент'?'block':'none';
-  // открываем нужную вкладку
-  if(isRegional){
-    switchRole('reg', document.getElementById('tab-reg'));
-  } else {
-    switchRole('dir', document.querySelector('.role-tab:not(.hidden)'));
-  }
-}
-
-function switchRole(role, tab){
-  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.role-panel').forEach(p=>p.classList.remove('active'));
-  if(tab) tab.classList.add('active');
-  else document.querySelectorAll('.role-tab')[['reg','dir','ad','st'].indexOf(role)].classList.add('active');
-  document.getElementById('panel-'+role).classList.add('active');
-  // показываем шкалу сразу при переключении даже без данных
-  if(DIR){
-    const sc = SCALES[DIR.seg][role] || (role==='reg' ? SCALES[DIR.seg]['reg'] : null);
-    if(sc) renderScale(role, sc, 0);
-  }
-  calc(role);
-}
-
-function changeSeg(seg){
-  if(!DIR) return;
-  DIR.seg = seg;
-  // обновляем плейсхолдеры
+  const isReg = seg==='regional_corneli'||seg==='regional_crinzo';
+  const isAdmin = seg==='admin_full';
+  document.getElementById('tab-reg').classList.toggle('hidden',!isReg);
+  document.getElementById('seg-wrap').classList.toggle('hidden',!isAdmin);
   const dp=document.getElementById('dir-s_plan'); if(dp) dp.placeholder=TO_PH[seg]||'60 000 000';
   const df=document.getElementById('dir-s_fact'); if(df) df.placeholder=TO_PH[seg]||'60 000 000';
   const ap=document.getElementById('ad-p_plan'); if(ap) ap.placeholder=SALES_PH[seg]||'10 000 000';
@@ -309,138 +321,242 @@ function changeSeg(seg){
   const sp=document.getElementById('st-p_plan'); if(sp) sp.placeholder=SALES_PH[seg]||'10 000 000';
   const sf=document.getElementById('st-p_fact'); if(sf) sf.placeholder=SALES_PH[seg]||'10 000 000';
   const sa=document.getElementById('st-atv_plan'); if(sa) sa.placeholder=ATV_PH[seg]||'200 000';
-  const saf=document.getElementById('st-atv_fact'); if(saf) saf.placeholder=ATV_PH[seg]||'200 000';
-  ['dir','ad','st'].forEach(r=>calc(r));
+  const hw=document.getElementById('st-hours-wrap'); if(hw) hw.style.display=dir.city==='Шымкент'?'block':'none';
+  if(isReg) switchRole('reg',document.getElementById('tab-reg'));
+  else switchRole('dir',document.querySelector('.role-tab:not(.hidden)'));
 }
-function renderScale(role, scale, pct){
-  const wrap = document.getElementById(role+'-scale-wrap');
-  const head = document.getElementById(role+'-scale-head');
-  const body = document.getElementById(role+'-scale-body');
-  const title = document.getElementById(role+'-scale-title');
-  if(!wrap) return;
-  wrap.style.display='block';
-  const col1 = role==='dir'||role==='reg' ? 'Выполнение плана ТО' : 'Выполнение личного плана';
-  if(title) title.textContent = role==='reg' ? 'Шкала % от ТО сети' : role==='dir' ? 'Шкала % от ТО магазина' : 'Шкала % от личных продаж';
-  head.innerHTML = `<tr><th>${col1}</th><th>Ставка</th></tr>`;
-  const sc = Array.isArray(scale) ? scale : (scale['reg'] || scale[role] || Object.values(scale)[0]);
-  body.innerHTML = sc.map((item,i)=>{
-    const [th,v]=item;
-    let lbl;
-    if(i===0) lbl=`до ${Math.round(sc[1][0]*100)}%`;
-    else if(i===sc.length-1) lbl=`от ${Math.round(th*100)}%`;
-    else lbl=`от ${Math.round(th*100)}% до ${Math.round(sc[i+1][0]*100)}%`;
-    const active = pct>=th-1e-9 && (i===sc.length-1 || pct<sc[i+1][0]-1e-9);
-    return `<tr class="${active?'active-row':''}"><td>${lbl}</td><td>${(v*100).toFixed(2).replace('.',',')}%</td></tr>`;
-  }).join('');
+
+// КАБИНЕТ
+function showCabinet(){
+  if(!DIR) return;
+  document.getElementById('main').style.display='none';
+  document.getElementById('cabinet').style.display='block';
+  document.getElementById('cab-store').textContent=DIR.store+' · '+DIR.brand;
+  const today=new Date();
+  document.getElementById('cab-date').textContent=today.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  loadCabinet();
 }
+function hideCabinet(){
+  document.getElementById('cabinet').style.display='none';
+  document.getElementById('main').style.display='block';
+}
+
+async function supaFetch(table, params=''){
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+  });
+  return r.json();
+}
+
+async function loadCabinet(){
+  const store = DIR.store;
+  const brand = DIR.brand;
+
+  // Последняя дата
+  const dates = await supaFetch('daily_employees','?select=report_date&order=report_date.desc&limit=1');
+  const lastDate = dates[0]?.report_date;
+  if(!lastDate){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Нет данных</div>'; return; }
+
+  // Данные сотрудников
+  const emps = await supaFetch('daily_employees',
+    `?report_date=eq.${lastDate}&store=eq.${encodeURIComponent(store)}&brand=eq.${encodeURIComponent(brand)}&order=plan_pct.desc`);
+
+  // Недельные метрики магазина
+  const weekly = await supaFetch('store_weekly_metrics',
+    `?brand=eq.${encodeURIComponent(brand)}&store=ilike.*${encodeURIComponent(store.split(' ')[0])}*&order=report_date.desc&limit=1`);
+  const w = weekly[0] || {};
+
+  // KPI магазина
+  const totalFact = emps.reduce((s,e)=>s+(parseFloat(e.fact)||0),0);
+  const totalPlan = emps.reduce((s,e)=>s+(parseFloat(e.plan)||0),0);
+  const pct = totalPlan>0 ? Math.round(totalFact/totalPlan*100) : 0;
+  const avgAtv = emps.length>0 ? Math.round(emps.reduce((s,e)=>s+(parseFloat(e.atv_fact)||0),0)/emps.length) : 0;
+  const avgUpt = emps.length>0 ? (emps.reduce((s,e)=>s+(parseFloat(e.upt_fact)||0),0)/emps.length).toFixed(2) : 0;
+  const okCount = emps.filter(e=>e.signal==='ok').length;
+
+  const kpiColor = pct>=100?'ok':pct>=85?'warn':'bad';
+  document.getElementById('cab-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Команда на плане</div><div class="kpi-val ${kpiColor}">${pct}%</div></div>
+    <div class="kpi"><div class="kpi-label">Средний чек</div><div class="kpi-val ${avgAtv>0?'ok':'bad'}">${(avgAtv/1000).toFixed(0)}к</div></div>
+    <div class="kpi"><div class="kpi-label">UPT</div><div class="kpi-val ok">${avgUpt}</div></div>
+    <div class="kpi"><div class="kpi-label">В зелёной зоне</div><div class="kpi-val ${okCount>emps.length/2?'ok':'warn'}">${okCount} / ${emps.length}</div></div>`;
+
+  // Прогресс месяца из weekly
+  const monthFact = (parseFloat(w.sales_w1)||0)+(parseFloat(w.sales_w2)||0)+(parseFloat(w.sales_w3)||0);
+  const monthPlan = parseFloat(w.sales_plan)||0;
+  const monthPct = monthPlan>0 ? Math.round(monthFact/monthPlan*100) : 0;
+  document.getElementById('cab-pct-label').textContent = monthPct+'%';
+  document.getElementById('cab-bar').style.width = Math.min(100,monthPct)+'%';
+  document.getElementById('cab-bar').style.background = monthPct>=100?'var(--good)':monthPct>=85?'var(--accent)':'var(--warn)';
+  document.getElementById('cab-prog-sub').textContent = monthFact>0
+    ? `Факт ${fmtM(monthFact)} из ${fmtM(monthPlan)} плана`
+    : 'Нет данных по месяцу';
+
+  // Команда по ролям
+  await loadTeam(emps);
+
+  // ИИ
+  await loadAI(emps, pct, avgAtv, avgUpt, lastDate);
+}
+
+async function loadTeam(emps){
+  const admins = emps.filter(e=>!e.role||e.role.toLowerCase().includes('админ'));
+  const stylists = emps.filter(e=>!e.role||e.role.toLowerCase().includes('стил'));
+
+  let html='';
+  if(admins.length){
+    html+='<div class="sec-head">Администраторы</div>';
+    html+=admins.map(e=>empCard(e)).join('');
+  }
+  if(stylists.length){
+    html+='<div class="sec-head">Стилисты-консультанты</div>';
+    html+=stylists.map(e=>empCard(e)).join('');
+  }
+  if(!admins.length&&!stylists.length){
+    html+=emps.map(e=>empCard(e)).join('');
+  }
+  document.getElementById('cab-team').innerHTML=html;
+}
+
+function empCard(e){
+  const sig=e.signal||'ok';
+  const cls=sig==='ok'?'ok':sig==='warning'?'warn':'bad';
+  const pct=Math.round(parseFloat(e.plan_pct)||0);
+  const initials=(e.name||'??').split(' ').slice(0,2).map(w=>w[0]).join('');
+  const atv=Math.round(parseFloat(e.atv_fact)||0);
+  const upt=parseFloat(e.upt_fact||0).toFixed(1);
+  return `<div class="emp">
+    <div class="av av-${cls}">${initials}</div>
+    <div><div class="emp-name">${e.name}</div><div class="emp-meta">ATV ${(atv/1000).toFixed(0)}к · UPT ${upt}</div></div>
+    <div class="emp-pct ${cls}">${pct}%</div>
+  </div>`;
+}
+
+async function loadAI(emps, pct, avgAtv, avgUpt, lastDate){
+  const day = new Date(lastDate).getDate();
+  const daysInMonth = 30;
+  const expectedPct = Math.round(day/daysInMonth*100);
+
+  const critical = emps.filter(e=>e.signal==='critical').slice(0,5);
+  const warning = emps.filter(e=>e.signal==='warning').slice(0,3);
+
+  const empSummary = emps.map(e=>`${e.name}: план ${Math.round(e.plan_pct||0)}%, ATV ${Math.round(e.atv_fact||0)}, UPT ${parseFloat(e.upt_fact||0).toFixed(1)}, сигнал: ${e.signal}`).join('\\n');
+
+  const prompt = `Ты HR-аналитик CRN Group (fashion retail, Казахстан).
+
+Данные магазина ${DIR.store} (${DIR.brand}) за ${lastDate}:
+- Команда выполняет план на ${pct}% (ожидаемо на эту дату: ${expectedPct}%)
+- Средний чек команды: ${avgAtv} тг
+- UPT: ${avgUpt}
+
+Сотрудники:
+${empSummary}
+
+Выдели максимум 3 человека которым директор должна уделить внимание СЕГОДНЯ.
+Для каждого: одна конкретная фраза-действие для директора (не анализ, а команда).
+Формат ответа — строго JSON массив, без markdown:
+[{"name":"Фамилия Имя","tag":"critical|warning","action":"конкретное действие директора одной фразой"}]
+Только JSON, ничего лишнего.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.find(c=>c.type==='text')?.text||'[]';
+    const clean = text.replace(/```json|```/g,'').trim();
+    const items = JSON.parse(clean);
+    if(!items.length){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Все сотрудники в норме — отличная работа команды!</div>'; return; }
+    document.getElementById('ai-content').innerHTML = items.map(it=>`
+      <div class="focus-item">
+        <div class="focus-name"><span class="focus-tag tag-${it.tag}">${it.tag==='critical'?'🔴 критично':'🟡 внимание'}</span>${it.name}</div>
+        <div class="focus-action">${it.action}</div>
+      </div>`).join('');
+  } catch(e){
+    document.getElementById('ai-content').innerHTML='<div class="ai-loading">Не удалось получить рекомендации</div>';
+  }
+}
+
+// КАЛЬКУЛЯТОР
+function switchRole(role,tab){
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.role-panel').forEach(p=>p.classList.remove('active'));
+  if(tab) tab.classList.add('active');
+  document.getElementById('panel-'+role).classList.add('active');
+  calc(role);
+}
+function changeSeg(seg){ if(DIR){DIR.seg=seg;} }
 function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
 function nextTier(scale,pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
-
 function calc(role){
-  if(!DIR) return;
-  const scale=SCALES[DIR.seg][role];
-  const core=CORE[role];
-  const rows=[];let total=0;
-  let plan=0,fact=0;
-
+  if(!DIR)return;
+  const scale=SCALES[DIR.seg]?.[role]||SCALES['corneli'][role]||SCALES['corneli']['dir'];
+  const core=CORE[role]||0;
+  const rows=[]; let total=0; let plan=0,fact=0;
   if(role==='reg'){
     plan=num('reg-plan'); fact=num('reg-to');
-    // Спецзадача
-    const spec = document.getElementById('reg-spec');
-    if(spec && spec.checked){ rows.push(['Спецзадача КД','выполнена · ежемесячно',100000]); total+=100000; }
-    else { rows.push(['Спецзадача КД','не выполнена · ежемесячно',0]); }
-    // Квартальный Core KPI
-    let qcore=0; const qparts=[];
-    const rhr=document.getElementById('reg-hr');
-    const rfin=document.getElementById('reg-fin');
-    const rstock=document.getElementById('reg-stock');
-    if(rhr&&rhr.checked){qcore+=150000;qparts.push('HR');}
-    if(rfin&&rfin.checked){qcore+=150000;qparts.push('FIN');}
-    if(rstock&&rstock.checked){qcore+=150000;qparts.push('Stock');}
-    rows.push(['Core KPI квартал',qparts.length?qparts.join(' + ')+' · квартально':'не выполнен',qcore]);
-    total+=qcore;
+    const spec=document.getElementById('reg-spec');
+    if(spec&&spec.checked){rows.push(['Спецзадача КД','выполнена',100000]);total+=100000;}
+    else rows.push(['Спецзадача КД','не выполнена',0]);
+    let qc=0; const qp=[];
+    if(chk('reg-hr')){qc+=150000;qp.push('HR');}
+    if(chk('reg-fin')){qc+=150000;qp.push('FIN');}
+    if(chk('reg-stock')){qc+=150000;qp.push('Stock');}
+    rows.push(['Core KPI квартал',qp.length?qp.join(' + '):'не выполнен',qc]); total+=qc;
   } else if(role==='dir'){
     plan=num('dir-s_plan'); fact=num('dir-s_fact');
-    let c=0,parts=[];
-    if(chk('dir-hr')){c+=core;parts.push('HR');}
-    if(chk('dir-fin')){c+=core;parts.push('FIN');}
-    if(chk('dir-stock')){c+=core;parts.push('Stock');}
-    rows.push(['Core KPI',parts.length?parts.join(' + '):'не выполнен',c]); total+=c;
+    let c=0; const p=[];
+    if(chk('dir-hr')){c+=core;p.push('HR');}
+    if(chk('dir-fin')){c+=core;p.push('FIN');}
+    if(chk('dir-stock')){c+=core;p.push('Stock');}
+    rows.push(['Core KPI',p.length?p.join(' + '):'не выполнен',c]); total+=c;
   } else if(role==='ad'){
     plan=num('ad-p_plan'); fact=num('ad-p_fact');
-    let c=0,parts=[];
-    if(chk('ad-hr')){c+=core;parts.push('HR');}
-    if(chk('ad-fin')){c+=core;parts.push('FIN');}
-    if(chk('ad-stock')){c+=core;parts.push('Stock');}
-    rows.push(['Core KPI',parts.length?parts.join(' + '):'не выполнен',c]); total+=c;
+    let c=0; const p=[];
+    if(chk('ad-hr')){c+=core;p.push('HR');}
+    if(chk('ad-fin')){c+=core;p.push('FIN');}
+    if(chk('ad-stock')){c+=core;p.push('Stock');}
+    rows.push(['Core KPI',p.length?p.join(' + '):'не выполнен',c]); total+=c;
   } else {
     plan=num('st-p_plan'); fact=num('st-p_fact');
-    if(DIR.city==='Шымкент'){
-      const h=num('st-hours'),pay=h*850;
-      rows.push(['Почасовая (850 тг/час)',h?h+' ч':'введи часы',pay]); total+=pay;
-    }
+    if(DIR.city==='Шымкент'){const h=num('st-hours'),pay=h*850;rows.push(['Почасовая (850 тг/час)',h?h+' ч':'введи часы',pay]);total+=pay;}
     const ap=num('st-atv_plan'),af=num('st-atv_fact');
     let atvB=0; const ap2=ap>0?af/ap:0;
     if(ap2>=1.1999)atvB=50000; else if(ap2>=0.9999)atvB=30000;
     rows.push(['Бонус за средний чек',ap>0?'выполнение '+(ap2*100).toFixed(1)+'%':'введи план и факт',atvB]); total+=atvB;
   }
-
-  if(role==='reg'){
-    const pct=plan>0?fact/plan:0;
-    const r=rateAt(scale['reg']||scale,pct);
-    const bonus=fact*r;
-    rows.push(['% от ТО сети CORNELI',plan>0?'выполнение '+(pct*100).toFixed(1)+'% → '+(r*100).toFixed(2).replace('.',',')+'%':'введи план и факт',bonus]);
-    total+=bonus;
-    document.getElementById('reg-total').innerHTML=plan>0?'<b>'+fmt(total)+'</b>':'—';
-    document.getElementById('reg-bd').innerHTML=rows.map(([n,note,amt])=>
-      `<div class="bd-row"><div>${n}${note?`<small>${note}</small>`:''}</div><div class="amt${amt?'':' zero'}">${fmt(amt)}</div></div>`).join('');
-    const card=document.getElementById('reg-next');
-    if(plan>0){
-      const nt=nextTier(scale['reg']||scale,pct);
-      if(nt){const [th,nr]=nt;const need=plan*th-fact;const gain=(fact+need)*nr-bonus;
-        card.className='next';
-        card.innerHTML=`<div class="next-ey">До следующего уровня</div><div class="next-main">Ещё <b>${fmt(need)}</b> — порог ${Math.round(th*100)}%. Ставка вырастет с ${(r*100).toFixed(2).replace('.',',')}% до ${(nr*100).toFixed(2).replace('.',',')}%.</div><div class="next-gain">+ ${fmt((fact+need)*nr-bonus)} к бонусу</div><div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct/th*100)}%"></div></div><div class="bar-marks"><span>${(pct*100).toFixed(1)}%</span><span>${Math.round(th*100)}%</span></div>`;
-      } else {card.className='next max';card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%.</div>`;}
-      card.classList.remove('hidden');
-    } else card.classList.add('hidden');
-    renderScale('reg', scale, pct);
-    return;
-  }
   const pct=plan>0?fact/plan:0;
-  const r=rateAt(scale,pct);
+  const r=rateAt(role==='reg'?(scale['reg']||scale):scale,pct);
   const bonus=fact*r;
-  const lbl=role==='dir'?'% от товарооборота':'% от личных продаж';
+  const lbl=role==='dir'||role==='reg'?'% от товарооборота':'% от личных продаж';
   rows.push([lbl,plan>0?'план '+(pct*100).toFixed(1)+'% → '+(r*100).toFixed(2).replace('.',',')+'%':'введи план и факт',bonus]);
   total+=bonus;
-
   document.getElementById(role+'-total').innerHTML=plan>0||role==='st'?'<b>'+fmt(total)+'</b>':'—';
   document.getElementById(role+'-bd').innerHTML=rows.map(([n,note,amt])=>
-    `<div class="bd-row"><div>${n}${note?`<small>${note}</small>`:''}</div><div class="amt${amt?'':' zero'}">${fmt(amt)}</div></div>`
-  ).join('');
-
+    `<div class="bd-row"><div>${n}${note?`<small>${note}</small>`:''}</div><div class="amt${amt?'':' zero'}">${fmt(amt)}</div></div>`).join('');
   const card=document.getElementById(role+'-next');
+  const sc2=role==='reg'?(scale['reg']||scale):scale;
   if(plan>0){
-    const nt=nextTier(scale,pct);
+    const nt=nextTier(sc2,pct);
     if(nt){
-      const [th,nr]=nt;
-      const need=plan*th-fact;
-      const gain=(fact+need)*nr-bonus;
+      const [th,nr]=nt; const need=plan*th-fact; const gain=(fact+need)*nr-bonus;
       card.className='next';
-      card.innerHTML=`<div class="next-ey">До следующего уровня</div>
-        <div class="next-main">Ещё <b>${fmt(need)}</b> — порог ${Math.round(th*100)}%. Ставка вырастет с ${(r*100).toFixed(2).replace('.',',')}% до ${(nr*100).toFixed(2).replace('.',',')}%.</div>
-        <div class="next-gain">+ ${fmt(gain)} к бонусу</div>
-        <div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct/th*100)}%"></div></div>
-        <div class="bar-marks"><span>${(pct*100).toFixed(1)}% сейчас</span><span>${Math.round(th*100)}%</span></div>`;
+      card.innerHTML=`<div class="next-ey">До следующего уровня</div><div class="next-main">Ещё <b>${fmt(need)}</b> — порог ${Math.round(th*100)}%. Ставка вырастет с ${(r*100).toFixed(2).replace('.',',')}% до ${(nr*100).toFixed(2).replace('.',',')}%.</div><div class="next-gain">+ ${fmt(gain)} к бонусу</div><div class="barx"><div class="barx-fill" style="width:${Math.min(100,pct/th*100)}%"></div></div><div class="bar-marks"><span>${(pct*100).toFixed(1)}%</span><span>${Math.round(th*100)}%</span></div>`;
     } else {
       card.className='next max';
-      card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">Ты на высшем уровне — ${(r*100).toFixed(2).replace('.',',')}%. Каждая продажа по максимуму.</div>`;
+      card.innerHTML=`<div class="next-ey">Максимальная ставка</div><div class="next-main">${(r*100).toFixed(2).replace('.',',')}% — каждая продажа по максимуму.</div>`;
     }
     card.classList.remove('hidden');
   } else card.classList.add('hidden');
-  renderScale(role, scale, pct);
 }
 
-// восстановление сессии
+// СЕССИЯ
 (function(){
   const saved=sessionStorage.getItem('crn_dir');
   if(saved){try{showMain(JSON.parse(saved));}catch(e){sessionStorage.removeItem('crn_dir');}}
