@@ -192,7 +192,7 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
         <label class="tgl"><input type="checkbox" id="dir-stock" checked onchange="calc('dir')"><span>Stock-бонус<small>лимиты по выгрузке и перемещениям</small></span></label>
       </div>
     </div>
-    <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="dir-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
+    <div class="total-card"><div class="total-label">Прогноз дохода за месяц</div><div class="total-num" id="dir-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="dir-bd"></div>
     <div class="next hidden" id="dir-next"></div>
   </div>
@@ -210,7 +210,7 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
         <label class="tgl"><input type="checkbox" id="ad-stock" checked onchange="calc('ad')"><span>Stock-бонус<small>лимиты по выгрузке и перемещениям</small></span></label>
       </div>
     </div>
-    <div class="total-card"><div class="total-label">Прогноз бонуса</div><div class="total-num" id="ad-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
+    <div class="total-card"><div class="total-label">Прогноз дохода за месяц</div><div class="total-num" id="ad-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="ad-bd"></div>
     <div class="next hidden" id="ad-next"></div>
   </div>
@@ -636,6 +636,10 @@ function calc(role){
     rows.push(['Core KPI квартал',qp.length?qp.join(' + '):'не выполнен',qc]); total+=qc;
   } else if(role==='dir'){
     plan=num('dir-s_plan'); fact=num('dir-s_fact');
+    rows.push(['Оклад','фиксированная часть',300000]); total+=300000;
+    let grade=0;
+    if(fact>=40e6) grade=50000; else if(fact>=25e6) grade=30000;
+    rows.push(['Грейдовая надбавка',fact>=40e6?'ТО ≥ 40 млн':fact>=25e6?'ТО ≥ 25 млн':'ТО < 25 млн — 0',grade]); total+=grade;
     let c=0; const p=[];
     if(chk('dir-hr')){c+=core;p.push('HR');}
     if(chk('dir-fin')){c+=core;p.push('FIN');}
@@ -643,6 +647,11 @@ function calc(role){
     rows.push(['Core KPI',p.length?p.join(' + '):'не выполнен',c]); total+=c;
   } else if(role==='ad'){
     plan=num('ad-p_plan'); fact=num('ad-p_fact');
+    rows.push(['Оклад','фиксированная часть',220000]); total+=220000;
+    const stoTo=num('dir-s_fact')||0;
+    let gradeAd=0;
+    if(stoTo>=40e6) gradeAd=30000; else if(stoTo>=25e6) gradeAd=20000;
+    rows.push(['Грейдовая надбавка',stoTo>=40e6?'ТО ≥ 40 млн':stoTo>=25e6?'ТО ≥ 25 млн':'введи ТО магазина во вкладке Директор',gradeAd]); total+=gradeAd;
     let c=0; const p=[];
     if(chk('ad-hr')){c+=core;p.push('HR');}
     if(chk('ad-fin')){c+=core;p.push('FIN');}
