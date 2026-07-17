@@ -217,7 +217,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 
   <!-- ПАНЕЛЬ СТИЛИСТА -->
   <div class="role-panel" id="panel-st">
-    <!-- часы фиксированы: 200ч для всех, 850 тг/час для Шымкента -->
+    <div class="row2">
+      <div class="field"><label>План часов</label><input type="number" id="st-hours-plan" placeholder="200" inputmode="numeric" oninput="calc('st')"></div>
+      <div class="field"><label>Факт часов</label><input type="number" id="st-hours-fact" placeholder="178" inputmode="numeric" oninput="calc('st')"></div>
+    </div>
     <div class="row2">
       <div class="field"><label>План ср. чек, тг</label><input type="number" id="st-atv_plan" inputmode="numeric" oninput="calc('st')"></div>
       <div class="field"><label>Факт ср. чек, тг</label><input type="number" id="st-atv_fact" inputmode="numeric" oninput="calc('st')"></div>
@@ -321,7 +324,7 @@ function showMain(dir){
   const sp=document.getElementById('st-p_plan'); if(sp) sp.placeholder=SALES_PH[seg]||'10 000 000';
   const sf=document.getElementById('st-p_fact'); if(sf) sf.placeholder=SALES_PH[seg]||'10 000 000';
   const sa=document.getElementById('st-atv_plan'); if(sa) sa.placeholder=ATV_PH[seg]||'200 000';
-  // часы фиксированы — поле убрано
+  // часы вводятся вручную
   if(isReg) switchRole('reg',document.getElementById('tab-reg'));
   else switchRole('dir',document.querySelector('.role-tab:not(.hidden)'));
 }
@@ -660,8 +663,11 @@ function calc(role){
   } else {
     plan=num('st-p_plan'); fact=num('st-p_fact');
     const hourRate = DIR.city==='Шымкент' ? 850 : 1000;
-    const hourPay = 200 * hourRate;
-    rows.push(['Почасовая оплата','200 ч × '+hourRate.toLocaleString('ru-RU')+' тг/час',hourPay]); total+=hourPay;
+    const hPlan = num('st-hours-plan') || 200;
+    const hFact = num('st-hours-fact') || 0;
+    const hourPay = hFact * hourRate;
+    const hourLabel = hFact ? hFact+' ч × '+hourRate.toLocaleString('ru-RU')+' тг/час (план '+hPlan+' ч)' : 'введи факт часов';
+    rows.push(['Почасовая оплата', hourLabel, hourPay]); total+=hourPay;
     const ap=num('st-atv_plan'),af=num('st-atv_fact');
     let atvB=0; const ap2=ap>0?af/ap:0;
     if(ap2>=1.1999)atvB=50000; else if(ap2>=0.9999)atvB=30000;
