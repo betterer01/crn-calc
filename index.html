@@ -111,6 +111,18 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .next.max{border-color:var(--good)}.next.max .next-ey{color:var(--good)}
 .hidden{display:none}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metrics-block{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.metrics-title{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:12px}
+.metrics-t{width:100%;border-collapse:collapse;font-size:12.5px}
+.metrics-t th{background:#eae6dc;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:7px 6px;border:1px solid var(--line);font-weight:700;text-align:center}
+.metrics-t td{padding:8px 6px;border:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.metrics-t td:first-child{text-align:left;font-weight:600;color:var(--mut);font-size:11px}
+.metrics-t tr.ok td{color:var(--good)}.metrics-t tr.warn td{color:var(--warn)}.metrics-t tr.bad td{color:var(--bad)}
+.earned-block{background:var(--ink);color:var(--paper);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.earned-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.65;margin-bottom:10px}
+.earned-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.1)}
+.earned-row:last-child{border-bottom:none;padding-top:8px;font-size:16px;font-weight:600}
+.earned-row span{opacity:.75}
 .disclaimer{margin-top:18px;font-size:10.5px;color:var(--mut);line-height:1.6}
 .seg-sel{width:100%;padding:12px 13px;font-size:15px;font-family:inherit;border:1px solid var(--line);background:var(--card);border-radius:0;appearance:none;margin-bottom:14px}
 @media(max-width:380px){.total-num{font-size:30px}.row2{grid-template-columns:1fr}}
@@ -261,6 +273,8 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
   </div>
 
   <!-- КОМАНДА -->
+  <div id="cab-metrics"></div>
+  <div id="cab-earned"></div>
   <div id="cab-team"></div>
 </div>
 
@@ -387,9 +401,88 @@ async function loadDirectorCabinet(){
   document.getElementById('cab-bar').style.width = Math.min(100,monthPct)+'%';
   document.getElementById('cab-bar').style.background = monthPct>=100?'var(--good)':monthPct>=85?'var(--accent)':'var(--warn)';
   document.getElementById('cab-prog-sub').textContent = monthFact>0 ? `Факт ${fmtM(monthFact)} из ${fmtM(monthPlan)} плана` : 'Нет данных по месяцу';
+  loadMetrics(w, DIR.seg);
   await loadTeam(emps);
   await loadAI(emps, pct, avgAtv, avgUpt, lastDate);
 }
+
+function loadMetrics(w, seg){
+  if(!w || !w.sales_plan){ 
+    document.getElementById('cab-metrics').innerHTML='';
+    document.getElementById('cab-earned').innerHTML='';
+    return; 
+  }
+  const fmt1 = n => n ? (n/1e6).toFixed(1)+' млн' : '—';
+  const fmtK = n => n ? Math.round(n).toLocaleString('ru-RU') : '—';
+  const fmtN = n => n ? parseFloat(n).toFixed(2) : '—';
+  const pctStr = (fact, plan) => plan>0 ? Math.round(fact/plan*100)+'%' : '—';
+
+  const salesFact = (parseFloat(w.sales_w1)||0)+(parseFloat(w.sales_w2)||0)+(parseFloat(w.sales_w3)||0);
+  const salesPlan = parseFloat(w.sales_plan)||0;
+  const salesPct = salesPlan>0 ? Math.round(salesFact/salesPlan*100) : 0;
+  const atvPlan = parseFloat(w.atv_plan)||0;
+  const atvFact = parseFloat(w.atv_total)||0;
+  const atvPct = atvPlan>0 ? Math.round(atvFact/atvPlan*100) : 0;
+  const uptPlan = parseFloat(w.upt_plan)||0;
+  const uptFact = parseFloat(w.upt_total)||0;
+
+  const salesColor = salesPct>=100?'ok':salesPct>=85?'warn':'bad';
+  const atvColor = atvPct>=100?'ok':atvPct>=85?'warn':'bad';
+
+  document.getElementById('cab-metrics').innerHTML=`
+    <div class="metrics-block">
+      <div class="metrics-title">Показатели магазина · ${w.report_date||''}</div>
+      <table class="metrics-t">
+        <tr><th>Показатель</th><th>План</th><th>W1</th><th>W2</th><th>W3</th><th>Итого</th><th>%</th></tr>
+        <tr class="${salesColor}">
+          <td>ТО</td>
+          <td>${fmt1(salesPlan)}</td>
+          <td>${fmt1(w.sales_w1)}</td>
+          <td>${fmt1(w.sales_w2)}</td>
+          <td>${fmt1(w.sales_w3)}</td>
+          <td>${fmt1(salesFact)}</td>
+          <td><b>${salesPct}%</b></td>
+        </tr>
+        <tr class="${atvColor}">
+          <td>Ср. чек</td>
+          <td>${fmtK(w.atv_plan)}</td>
+          <td>${fmtK(w.atv_w1)}</td>
+          <td>${fmtK(w.atv_w2)}</td>
+          <td>${fmtK(w.atv_w3)}</td>
+          <td>${fmtK(w.atv_total)}</td>
+          <td><b>${atvPct}%</b></td>
+        </tr>
+        <tr>
+          <td>UPT</td>
+          <td>${fmtN(w.upt_plan)}</td>
+          <td>${fmtN(w.upt_w1)}</td>
+          <td>${fmtN(w.upt_w2)}</td>
+          <td>${fmtN(w.upt_w3)}</td>
+          <td>${fmtN(w.upt_total)}</td>
+          <td>—</td>
+        </tr>
+      </table>
+    </div>`;
+
+  // Заработанный KPI
+  const SCALES = window.SCALES || {};
+  const scale = SCALES[seg]?.dir || [[0,.003],[.90,.006],[1.0,.0075],[1.1,.009],[1.2,.01]];
+  function rateAt(sc,p){ let r=sc[0][1]; for(const [th,v] of sc) if(p>=th-1e-9)r=v; return r; }
+  const salePct = salesPlan>0?salesFact/salesPlan:0;
+  const rate = rateAt(scale, salePct);
+  const bonusPct = Math.round(salesFact*rate);
+  const grade = salesFact>=40e6?50000:salesFact>=25e6?30000:0;
+  const gradeLabel = salesFact>=40e6?'ТО ≥ 40 млн':salesFact>=25e6?'ТО ≥ 25 млн':'ТО < 25 млн';
+  const total = 300000+grade+bonusPct;
+
+  document.getElementById('cab-earned').innerHTML=`
+    <div class="earned-block">
+      <div class="earned-title">Заработано на сегодня · без Core KPI</div>
+      <div class="earned-row"><span>Оклад</span><span>300 000 тг</span></div>
+      <div class="earned-row"><span>Грейд (${gradeLabel})</span><span>${grade.toLocaleString('ru-RU')} тг</span></div>
+      <div class="earned-row"><span>% от ТО (${(rate*100).toFixed(2)}% × ${fmt1(salesFact)})</span><span>${bonusPct.toLocaleString('ru-RU')} тг</span></div>
+      <div class="earned-row"><span>Итого</span><span>${total.toLocaleString('ru-RU')} тг</span></div>
+    </div>`;}
 
 async function loadRegionalCabinet(){
   const brand = DIR.brand;
