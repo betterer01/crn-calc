@@ -380,7 +380,7 @@ async function loadDirectorCabinet(){
   const emps = await supaFetch('daily_employees',
     `?report_date=eq.${lastDate}&store=eq.${encodeURIComponent(store)}&brand=eq.${encodeURIComponent(brand)}&order=plan_pct.desc`);
   const weekly = await supaFetch('store_weekly_metrics',
-    `?brand=eq.${encodeURIComponent(brand)}&store=ilike.*${encodeURIComponent(store.split(' ')[0])}*&order=report_date.desc&limit=1`);
+    `?brand=eq.${encodeURIComponent(brand)}&store=eq.${encodeURIComponent(store)}&order=report_date.desc&limit=1`);
   const w = weekly[0] || {};
   const totalFact = emps.reduce((s,e)=>s+(parseFloat(e.fact)||0),0);
   const totalPlan = emps.reduce((s,e)=>s+(parseFloat(e.plan)||0),0);
