@@ -480,8 +480,7 @@ function loadMetrics(w, seg){
     </div>`;
 
   // Заработанный KPI
-  const SCALES = window.SCALES || {};
-  const scale = SCALES[seg]?.dir || [[0,.003],[.90,.006],[1.0,.0075],[1.1,.009],[1.2,.01]];
+  const scale = SCALES[seg]?.dir || SCALES['corneli'].dir;
   function rateAt(sc,p){ let r=sc[0][1]; for(const [th,v] of sc) if(p>=th-1e-9)r=v; return r; }
   const salePct = salesPlan>0?salesFact/salesPlan:0;
   const rate = rateAt(scale, salePct);
