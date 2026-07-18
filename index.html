@@ -118,11 +118,7 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .metrics-t td{padding:8px 6px;border:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
 .metrics-t td:first-child{text-align:left;font-weight:600;color:var(--mut);font-size:11px}
 .metrics-t tr.ok td{color:var(--good)}.metrics-t tr.warn td{color:var(--warn)}.metrics-t tr.bad td{color:var(--bad)}
-.earned-block{background:var(--ink);color:var(--paper);border-radius:12px;padding:14px 16px;margin-bottom:16px}
-.earned-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.65;margin-bottom:10px}
-.earned-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.1)}
-.earned-row:last-child{border-bottom:none;padding-top:8px;font-size:16px;font-weight:600}
-.earned-row span{opacity:.75}
+
 .disclaimer{margin-top:18px;font-size:10.5px;color:var(--mut);line-height:1.6}
 .seg-sel{width:100%;padding:12px 13px;font-size:15px;font-family:inherit;border:1px solid var(--line);background:var(--card);border-radius:0;appearance:none;margin-bottom:14px}
 @media(max-width:380px){.total-num{font-size:30px}.row2{grid-template-columns:1fr}}
@@ -274,7 +270,6 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 
   <!-- КОМАНДА -->
   <div id="cab-metrics"></div>
-  <div id="cab-earned"></div>
   <div id="cab-team"></div>
 </div>
 
@@ -410,7 +405,6 @@ async function loadDirectorCabinet(){
 function loadMetrics(w, seg){
   if(!w || !w.sales_plan){ 
     document.getElementById('cab-metrics').innerHTML='';
-    document.getElementById('cab-earned').innerHTML='';
     return; 
   }
   const fmt1 = n => n ? (n/1e6).toFixed(1)+' млн' : '—';
@@ -479,9 +473,7 @@ function loadMetrics(w, seg){
       </table>
     </div>`;
 
-  // Заработанный KPI
-  const scale = SCALES[seg]?.dir || SCALES['corneli'].dir;
-  function rateAt(sc,p){ let r=sc[0][1]; for(const [th,v] of sc) if(p>=th-1e-9)r=v; return r; }
+}
   const salePct = salesPlan>0?salesFact/salesPlan:0;
   const rate = rateAt(scale, salePct);
   const bonusPct = Math.round(salesFact*rate);
@@ -489,14 +481,7 @@ function loadMetrics(w, seg){
   const gradeLabel = salesFact>=40e6?'ТО ≥ 40 млн':salesFact>=25e6?'ТО ≥ 25 млн':'ТО < 25 млн';
   const total = 300000+grade+bonusPct;
 
-  document.getElementById('cab-earned').innerHTML=`
-    <div class="earned-block">
-      <div class="earned-title">Заработано на сегодня · без Core KPI</div>
-      <div class="earned-row"><span>Оклад</span><span>300 000 тг</span></div>
-      <div class="earned-row"><span>Грейд (${gradeLabel})</span><span>${grade.toLocaleString('ru-RU')} тг</span></div>
-      <div class="earned-row"><span>% от ТО (${(rate*100).toFixed(2)}% × ${fmt1(salesFact)})</span><span>${bonusPct.toLocaleString('ru-RU')} тг</span></div>
-      <div class="earned-row"><span>Итого</span><span>${total.toLocaleString('ru-RU')} тг</span></div>
-    </div>`;}
+}
 
 async function loadRegionalCabinet(){
   const brand = DIR.brand;
