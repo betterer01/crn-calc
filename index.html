@@ -373,8 +373,19 @@ async function loadDirectorCabinet(){
   const lastDate = dates[0]?.report_date;
   if(!lastDate){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Нет данных</div>'; return; }
   const storeQuery = store === 'AKTAU' ? 'in.("AKTAU","АКТАУ")' : `eq.${encodeURIComponent(store)}`;
-  const emps = await supaFetch('daily_employees',
+  const empsRaw = await supaFetch('daily_employees',
     `?report_date=eq.${lastDate}&store=${storeQuery}&brand=eq.${encodeURIComponent(brand)}&order=plan_pct.desc`);
+  // Подтягиваем роли из employees
+  const empRoles = await supaFetch('employees',
+    `?store=eq.${encodeURIComponent(store)}&brand=eq.${encodeURIComponent(brand)}&select=canonical_name,role`);
+  const roleMap = {};
+  for(const er of (empRoles||[])){
+    if(er.canonical_name && er.role) roleMap[er.canonical_name.split(' ')[0].toLowerCase()] = er.role;
+  }
+  const emps = empsRaw.map(e=>{
+    const firstToken = (e.name||'').split(' ')[0].toLowerCase();
+    return {...e, role: roleMap[firstToken] || e.role || null};
+  });
   const weekly = await supaFetch('store_weekly_metrics',
     `?brand=eq.${encodeURIComponent(brand)}&store=eq.${encodeURIComponent(store)}&order=report_date.desc&limit=1`);
   const w = weekly[0] || {};
@@ -474,7 +485,6 @@ function loadMetrics(w, seg){
     </div>`;
 
 }
-
 async function loadRegionalCabinet(){
   const brand = DIR.brand;
   const dates = await supaFetch('daily_employees','?select=report_date&order=report_date.desc&limit=1');
@@ -604,8 +614,10 @@ ${storeSummary}
 }
 
 async function loadTeam(emps){
-  const admins = emps.filter(e=>!e.role||e.role.toLowerCase().includes('админ'));
+  const SALES_ROLES = ['стилист', 'администратор'];
+  const admins   = emps.filter(e=>e.role&&e.role.toLowerCase().includes('админ'));
   const stylists = emps.filter(e=>!e.role||e.role.toLowerCase().includes('стил'));
+  const other    = emps.filter(e=>e.role&&!SALES_ROLES.some(r=>e.role.toLowerCase().includes(r)));
 
   let html='';
   if(admins.length){
@@ -616,9 +628,7 @@ async function loadTeam(emps){
     html+='<div class="sec-head">Стилисты-консультанты</div>';
     html+=stylists.map(e=>empCard(e)).join('');
   }
-  if(!admins.length&&!stylists.length){
-    html+=emps.map(e=>empCard(e)).join('');
-  }
+  // кладовщики, швейные мастера и т.д. — не показываем
   document.getElementById('cab-team').innerHTML=html;
 }
 
