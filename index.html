@@ -415,15 +415,15 @@ async function loadDirectorCabinet(){
   document.getElementById('cab-bar').style.width = Math.min(100,monthPct)+'%';
   document.getElementById('cab-bar').style.background = monthPct>=100?'var(--good)':monthPct>=85?'var(--accent)':'var(--warn)';
   document.getElementById('cab-prog-sub').textContent = monthFact>0 ? `Факт ${fmtM(monthFact)} из ${fmtM(monthPlan)} плана` : 'Нет данных по месяцу';
-  // Недельный план — текущая неделя (w3 если есть, иначе w2)
-  const weekFact = parseFloat(w.sales_w3)||parseFloat(w.sales_w2)||0;
-  const weekPlan = parseFloat(w.checks_plan)>0 ? parseFloat(w.sales_plan)/4 : parseFloat(w.sales_plan)/4;
-  const weekPlanCalc = Math.round(parseFloat(w.sales_plan)/4.3);
-  const weekPct = weekPlanCalc>0 ? Math.round(weekFact/weekPlanCalc*100) : 0;
-  document.getElementById('cab-week-pct-label').textContent = weekFact>0 ? weekPct+'%' : '—';
-  document.getElementById('cab-week-bar').style.width = Math.min(100,weekPct)+'%';
-  document.getElementById('cab-week-bar').style.background = weekPct>=100?'var(--good)':weekPct>=85?'var(--accent)':'var(--warn)';
-  document.getElementById('cab-week-sub').textContent = weekFact>0 ? `Факт ${fmtM(weekFact)} из ${fmtM(weekPlanCalc)} плана` : 'Нет данных по неделе';
+  // Недельный план — вычисляем из факта и процента текущей недели
+  const wFact = parseFloat(w.sales_w3)||parseFloat(w.sales_w2)||0;
+  const wPct  = parseFloat(w.sales_pct_w3)||parseFloat(w.sales_pct_w2)||0;
+  const wPlan = wPct>0 ? Math.round(wFact/(wPct/100)) : 0;
+  const wPctDisp = wPlan>0 ? Math.round(wFact/wPlan*100) : 0;
+  document.getElementById('cab-week-pct-label').textContent = wFact>0 ? wPctDisp+'%' : '—';
+  document.getElementById('cab-week-bar').style.width = Math.min(100,wPctDisp)+'%';
+  document.getElementById('cab-week-bar').style.background = wPctDisp>=100?'var(--good)':wPctDisp>=85?'var(--accent)':'var(--warn)';
+  document.getElementById('cab-week-sub').textContent = wFact>0 ? `Факт ${fmtM(wFact)} из ${fmtM(wPlan)} плана недели` : 'Нет данных по неделе';
   loadMetrics(w, DIR.seg);
   await loadTeam(emps);
   await loadAI(emps, pct, avgAtv, avgUpt, lastDate);
