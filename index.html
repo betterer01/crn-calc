@@ -474,14 +474,6 @@ function loadMetrics(w, seg){
     </div>`;
 
 }
-  const salePct = salesPlan>0?salesFact/salesPlan:0;
-  const rate = rateAt(scale, salePct);
-  const bonusPct = Math.round(salesFact*rate);
-  const grade = salesFact>=40e6?50000:salesFact>=25e6?30000:0;
-  const gradeLabel = salesFact>=40e6?'ТО ≥ 40 млн':salesFact>=25e6?'ТО ≥ 25 млн':'ТО < 25 млн';
-  const total = 300000+grade+bonusPct;
-
-}
 
 async function loadRegionalCabinet(){
   const brand = DIR.brand;
