@@ -377,8 +377,9 @@ async function loadDirectorCabinet(){
   const dates = await supaFetch('daily_employees','?select=report_date&order=report_date.desc&limit=1');
   const lastDate = dates[0]?.report_date;
   if(!lastDate){ document.getElementById('ai-content').innerHTML='<div class="ai-loading">Нет данных</div>'; return; }
+  const storeQuery = store === 'AKTAU' ? 'in.("AKTAU","АКТАУ")' : `eq.${encodeURIComponent(store)}`;
   const emps = await supaFetch('daily_employees',
-    `?report_date=eq.${lastDate}&store=eq.${encodeURIComponent(store)}&brand=eq.${encodeURIComponent(brand)}&order=plan_pct.desc`);
+    `?report_date=eq.${lastDate}&store=${storeQuery}&brand=eq.${encodeURIComponent(brand)}&order=plan_pct.desc`);
   const weekly = await supaFetch('store_weekly_metrics',
     `?brand=eq.${encodeURIComponent(brand)}&store=eq.${encodeURIComponent(store)}&order=report_date.desc&limit=1`);
   const w = weekly[0] || {};
@@ -433,10 +434,26 @@ function loadMetrics(w, seg){
     <div class="metrics-block">
       <div class="metrics-title">Показатели магазина · ${w.report_date||''}</div>
       <table class="metrics-t">
-        <tr><th>Показатель</th><th>План</th><th>W1</th><th>W2</th><th>W3</th><th>Итого</th><th>%</th></tr>
+        <tr><th>Показатель</th><th>W1</th><th>W2</th><th>W3</th><th>Факт</th><th>%</th></tr>
+        <tr style="background:#f0f4ff"><td colspan="6" style="font-size:10px;color:var(--mut);padding:4px 6px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">ПЛАН МЕСЯЦА</td></tr>
+        <tr>
+          <td>ТО</td>
+          <td colspan="3" style="color:var(--mut)">${fmt1(salesPlan)}</td>
+          <td colspan="2" style="color:var(--mut)">—</td>
+        </tr>
+        <tr>
+          <td>Ср. чек</td>
+          <td colspan="3" style="color:var(--mut)">${fmtK(atvPlan)}</td>
+          <td colspan="2" style="color:var(--mut)">—</td>
+        </tr>
+        <tr>
+          <td>UPT</td>
+          <td colspan="3" style="color:var(--mut)">${fmtN(uptPlan)}</td>
+          <td colspan="2" style="color:var(--mut)">—</td>
+        </tr>
+        <tr style="background:#f0f4ff"><td colspan="6" style="font-size:10px;color:var(--mut);padding:4px 6px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">ФАКТ ПО НЕДЕЛЯМ</td></tr>
         <tr class="${salesColor}">
           <td>ТО</td>
-          <td>${fmt1(salesPlan)}</td>
           <td>${fmt1(w.sales_w1)}</td>
           <td>${fmt1(w.sales_w2)}</td>
           <td>${fmt1(w.sales_w3)}</td>
@@ -445,7 +462,6 @@ function loadMetrics(w, seg){
         </tr>
         <tr class="${atvColor}">
           <td>Ср. чек</td>
-          <td>${fmtK(w.atv_plan)}</td>
           <td>${fmtK(w.atv_w1)}</td>
           <td>${fmtK(w.atv_w2)}</td>
           <td>${fmtK(w.atv_w3)}</td>
@@ -454,7 +470,6 @@ function loadMetrics(w, seg){
         </tr>
         <tr>
           <td>UPT</td>
-          <td>${fmtN(w.upt_plan)}</td>
           <td>${fmtN(w.upt_w1)}</td>
           <td>${fmtN(w.upt_w2)}</td>
           <td>${fmtN(w.upt_w3)}</td>
