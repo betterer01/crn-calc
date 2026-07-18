@@ -53,6 +53,8 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:6px}
 .prog-label b{color:var(--ink);font-weight:600}
 .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.bar-week{height:7px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:4px}
+.bar-week-fill{height:100%;border-radius:4px;background:var(--blue);transition:width .4s}
 .bar-fill{height:100%;border-radius:5px;background:var(--accent);transition:width .5s}
 .prog-sub{font-size:11px;color:var(--mut);text-align:center}
 
@@ -260,6 +262,11 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="prog-label"><span>Выполнение плана месяца</span><b id="cab-pct-label">—</b></div>
     <div class="bar"><div class="bar-fill" id="cab-bar" style="width:0%"></div></div>
     <div class="prog-sub" id="cab-prog-sub"></div>
+    <div style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+      <div class="prog-label" style="margin-bottom:5px"><span>Выполнение плана недели</span><b id="cab-week-pct-label">—</b></div>
+      <div class="bar-week"><div class="bar-week-fill" id="cab-week-bar" style="width:0%"></div></div>
+      <div class="prog-sub" id="cab-week-sub"></div>
+    </div>
   </div>
 
   <!-- ИИ ФОКУС -->
@@ -408,6 +415,15 @@ async function loadDirectorCabinet(){
   document.getElementById('cab-bar').style.width = Math.min(100,monthPct)+'%';
   document.getElementById('cab-bar').style.background = monthPct>=100?'var(--good)':monthPct>=85?'var(--accent)':'var(--warn)';
   document.getElementById('cab-prog-sub').textContent = monthFact>0 ? `Факт ${fmtM(monthFact)} из ${fmtM(monthPlan)} плана` : 'Нет данных по месяцу';
+  // Недельный план — текущая неделя (w3 если есть, иначе w2)
+  const weekFact = parseFloat(w.sales_w3)||parseFloat(w.sales_w2)||0;
+  const weekPlan = parseFloat(w.checks_plan)>0 ? parseFloat(w.sales_plan)/4 : parseFloat(w.sales_plan)/4;
+  const weekPlanCalc = Math.round(parseFloat(w.sales_plan)/4.3);
+  const weekPct = weekPlanCalc>0 ? Math.round(weekFact/weekPlanCalc*100) : 0;
+  document.getElementById('cab-week-pct-label').textContent = weekFact>0 ? weekPct+'%' : '—';
+  document.getElementById('cab-week-bar').style.width = Math.min(100,weekPct)+'%';
+  document.getElementById('cab-week-bar').style.background = weekPct>=100?'var(--good)':weekPct>=85?'var(--accent)':'var(--warn)';
+  document.getElementById('cab-week-sub').textContent = weekFact>0 ? `Факт ${fmtM(weekFact)} из ${fmtM(weekPlanCalc)} плана` : 'Нет данных по неделе';
   loadMetrics(w, DIR.seg);
   await loadTeam(emps);
   await loadAI(emps, pct, avgAtv, avgUpt, lastDate);
