@@ -170,12 +170,9 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
   </div>
 
   <div id="seg-wrap" class="hidden" style="margin-bottom:14px">
-    <label>Сегмент</label>
-    <select class="seg-sel" id="seg-select" onchange="changeSeg(this.value)">
-      <option value="corneli">CORNELI</option>
-      <option value="corneli_outlet">CORNELI OUTLET</option>
-      <option value="crinzo">CRINZO</option>
-      <option value="crinzo_outlet">CRINZO OUTLET</option>
+    <label>Выбери магазин</label>
+    <select class="seg-sel" id="store-select" onchange="changeStore(this.value)">
+      <option value="">— выбери магазин —</option>
     </select>
   </div>
 
@@ -358,6 +355,22 @@ function showMain(dir){
   const isAdmin = seg==='admin_full';
   document.getElementById('tab-reg').classList.toggle('hidden',!isReg);
   document.getElementById('seg-wrap').classList.toggle('hidden',!isAdmin);
+  if(isAdmin){
+    const sel=document.getElementById('store-select');
+    if(sel){
+      sel.innerHTML='<option value="">— выбери магазин —</option>';
+      // Группируем по бренду
+      const corneli=DIRECTORS.filter(d=>d.brand==='CORNELI'&&d.seg!=='regional_corneli'&&d.seg!=='admin_full');
+      const crinzo=DIRECTORS.filter(d=>d.brand==='CRINZO'&&d.seg!=='regional_crinzo');
+      const addGroup=(label,list)=>{
+        const og=document.createElement('optgroup'); og.label=label;
+        list.forEach(d=>{ const o=document.createElement('option'); o.value=d.phone; o.textContent=d.city+' · '+d.store; og.appendChild(o); });
+        sel.appendChild(og);
+      };
+      addGroup('CORNELI',corneli);
+      addGroup('CRINZO',crinzo);
+    }
+  }
   const dp=document.getElementById('dir-s_plan'); if(dp) dp.placeholder=TO_PH[seg]||'60 000 000';
   const df=document.getElementById('dir-s_fact'); if(df) df.placeholder=TO_PH[seg]||'60 000 000';
   const ap=document.getElementById('ad-p_plan'); if(ap) ap.placeholder=SALES_PH[seg]||'10 000 000';
@@ -755,7 +768,36 @@ function switchRole(role,tab){
   calc(role);
   if(DIR){ const sc=SCALES[DIR.seg]?.[role]; if(sc) renderScale(role, sc); }
 }
-function changeSeg(seg){ if(DIR){DIR.seg=seg;} }
+function changeStore(phone){
+  if(!phone) return;
+  const dir = DIRECTORS.find(d=>d.phone===phone);
+  if(!dir) return;
+  DIR.seg = dir.seg;
+  DIR.city = dir.city;
+  DIR.store = dir.store;
+  DIR.brand = dir.brand;
+  // обновляем плейсхолдеры
+  const seg=dir.seg;
+  const dp=document.getElementById('dir-s_plan'); if(dp) dp.placeholder=TO_PH[seg]||'60 000 000';
+  const df=document.getElementById('dir-s_fact'); if(df) df.placeholder=TO_PH[seg]||'60 000 000';
+  const ap=document.getElementById('ad-p_plan'); if(ap) ap.placeholder=SALES_PH[seg]||'10 000 000';
+  const af=document.getElementById('ad-p_fact'); if(af) af.placeholder=SALES_PH[seg]||'10 000 000';
+  const sp=document.getElementById('st-p_plan'); if(sp) sp.placeholder=SALES_PH[seg]||'10 000 000';
+  const sf=document.getElementById('st-p_fact'); if(sf) sf.placeholder=SALES_PH[seg]||'10 000 000';
+  const sa=document.getElementById('st-atv_plan'); if(sa) sa.placeholder=ATV_PH[seg]||'200 000';
+  const hw=document.getElementById('st-hours-wrap'); if(hw) hw.style.display=dir.city==='Шымкент'?'block':'none';
+  // сбрасываем поля
+  ['dir-s_plan','dir-s_fact','ad-p_plan','ad-p_fact','st-p_plan','st-p_fact',
+   'st-atv_plan','st-atv_fact','st-hours-plan','st-hours-fact'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  // пересчитываем активную вкладку
+  const activeTab = document.querySelector('.role-tab.active');
+  const activeRole = activeTab ? ['reg','dir','ad','st'].find(r=>activeTab.onclick?.toString().includes(`'${r}'`)) || 'dir' : 'dir';
+  calc(activeRole);
+  // обновляем шкалу
+  const sc=SCALES[seg]?.[activeRole]; if(sc) renderScale(activeRole, sc);
+}
 function renderScale(role, scale){
   const wrap=document.getElementById(role+'-scale-wrap');
   const head=document.getElementById(role+'-scale-head');
