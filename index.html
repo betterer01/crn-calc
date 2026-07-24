@@ -121,6 +121,15 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .metrics-t td:first-child{text-align:left;font-weight:600;color:var(--mut);font-size:11px}
 .metrics-t tr.ok td{color:var(--good)}.metrics-t tr.warn td{color:var(--warn)}.metrics-t tr.bad td{color:var(--bad)}
 
+.scale-block{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+.scale-block-title{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600;padding:10px 14px 6px;border-bottom:1px solid var(--line)}
+.scale-t{width:100%;border-collapse:collapse;font-size:13px}
+.scale-t th{background:#eae6dc;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:7px 8px;border:1px solid var(--line);font-weight:700;text-align:center}
+.scale-t td{padding:9px 8px;border:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.scale-t tr.active-row td{background:#fff8e8;font-weight:700}
+.scale-t tr.active-row td:first-child::before{content:"► ";color:var(--accent)}
+.scale-t tr.active-row td:last-child{color:var(--accent-ink);font-size:15px}
+.scale-t tr.active-row td:last-child::after{content:" ◄";color:var(--accent);font-size:12px}
 .disclaimer{margin-top:18px;font-size:10.5px;color:var(--mut);line-height:1.6}
 .seg-sel{width:100%;padding:12px 13px;font-size:15px;font-family:inherit;border:1px solid var(--line);background:var(--card);border-radius:0;appearance:none;margin-bottom:14px}
 @media(max-width:380px){.total-num{font-size:30px}.row2{grid-template-columns:1fr}}
@@ -187,6 +196,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз дохода</div><div class="total-num" id="reg-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="reg-bd"></div>
     <div class="next hidden" id="reg-next"></div>
+    <div class="scale-block" id="reg-scale-wrap" style="display:none">
+      <div class="scale-block-title" id="reg-scale-title">Шкала</div>
+      <table class="scale-t"><thead id="reg-scale-head"></thead><tbody id="reg-scale-body"></tbody></table>
+    </div>
   </div>
 
   <!-- ПАНЕЛЬ ДИРЕКТОРА -->
@@ -205,6 +218,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз дохода за месяц</div><div class="total-num" id="dir-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="dir-bd"></div>
     <div class="next hidden" id="dir-next"></div>
+    <div class="scale-block" id="dir-scale-wrap" style="display:none">
+      <div class="scale-block-title" id="dir-scale-title">Шкала</div>
+      <table class="scale-t"><thead id="dir-scale-head"></thead><tbody id="dir-scale-body"></tbody></table>
+    </div>
   </div>
 
   <!-- ПАНЕЛЬ АДМИНИСТРАТОРА -->
@@ -223,6 +240,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз дохода за месяц</div><div class="total-num" id="ad-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="ad-bd"></div>
     <div class="next hidden" id="ad-next"></div>
+    <div class="scale-block" id="ad-scale-wrap" style="display:none">
+      <div class="scale-block-title" id="ad-scale-title">Шкала</div>
+      <table class="scale-t"><thead id="ad-scale-head"></thead><tbody id="ad-scale-body"></tbody></table>
+    </div>
   </div>
 
   <!-- ПАНЕЛЬ СТИЛИСТА -->
@@ -242,6 +263,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
     <div class="total-card"><div class="total-label">Прогноз дохода за месяц</div><div class="total-num" id="st-total">—</div><div class="total-sub">до налогов · ориентировочно</div></div>
     <div class="breakdown" id="st-bd"></div>
     <div class="next hidden" id="st-next"></div>
+    <div class="scale-block" id="st-scale-wrap" style="display:none">
+      <div class="scale-block-title" id="st-scale-title">Шкала</div>
+      <table class="scale-t"><thead id="st-scale-head"></thead><tbody id="st-scale-body"></tbody></table>
+    </div>
   </div>
 
   <div class="disclaimer">Расчёт по системе оплаты труда CRN Group, приказ от 30.04.2026. Итоговое начисление — по данным 1С. При расхождении приоритет у расчётной ведомости.</div>
@@ -728,8 +753,37 @@ function switchRole(role,tab){
   if(tab) tab.classList.add('active');
   document.getElementById('panel-'+role).classList.add('active');
   calc(role);
+  if(DIR){ const sc=SCALES[DIR.seg]?.[role]; if(sc) renderScale(role, sc); }
 }
 function changeSeg(seg){ if(DIR){DIR.seg=seg;} }
+function renderScale(role, scale){
+  const wrap=document.getElementById(role+'-scale-wrap');
+  const head=document.getElementById(role+'-scale-head');
+  const body=document.getElementById(role+'-scale-body');
+  const title=document.getElementById(role+'-scale-title');
+  if(!wrap) return;
+  wrap.style.display='block';
+  const isDir=role==='dir'||role==='reg';
+  if(title) title.textContent=isDir?'Шкала % от товарооборота':'Шкала % от личных продаж';
+  const sc=Array.isArray(scale)?scale:(scale.reg||scale.dir||scale.st||Object.values(scale)[0]);
+  head.innerHTML=`<tr><th>Выполнение плана</th><th>Ставка</th></tr>`;
+  const pct=DIR?(() => {
+    if(role==='dir') return num('dir-s_plan')>0?num('dir-s_fact')/num('dir-s_plan'):0;
+    if(role==='ad') return num('ad-p_plan')>0?num('ad-p_fact')/num('ad-p_plan'):0;
+    if(role==='st') return num('st-p_plan')>0?num('st-p_fact')/num('st-p_plan'):0;
+    if(role==='reg') return num('reg-plan')>0?num('reg-to')/num('reg-plan'):0;
+    return 0;
+  })():0;
+  body.innerHTML=sc.map((item,i)=>{
+    const [th,v]=item;
+    let lbl;
+    if(i===0) lbl=`до ${Math.round(sc[1][0]*100)}%`;
+    else if(i===sc.length-1) lbl=`от ${Math.round(th*100)}%`;
+    else lbl=`от ${Math.round(th*100)}% до ${Math.round(sc[i+1][0]*100)}%`;
+    const active=pct>=th-1e-9&&(i===sc.length-1||pct<sc[i+1][0]-1e-9);
+    return `<tr class="${active?'active-row':''}"><td>${lbl}</td><td>${(v*100).toFixed(2).replace('.',',')}%</td></tr>`;
+  }).join('');
+}
 function rateAt(scale,pct){ let r=scale[0][1]; for(const [th,v] of scale) if(pct>=th-1e-9)r=v; return r; }
 function nextTier(scale,pct){ for(const [th,v] of scale) if(pct<th-1e-9)return [th,v]; return null; }
 function calc(role){
@@ -806,6 +860,9 @@ function calc(role){
     }
     card.classList.remove('hidden');
   } else card.classList.add('hidden');
+  // Показываем шкалу
+  const scaleForRole = SCALES[DIR.seg]?.[role] || SCALES['corneli'][role] || scale;
+  renderScale(role, scaleForRole);
 }
 
 // СЕССИЯ
